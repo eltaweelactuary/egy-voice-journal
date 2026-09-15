@@ -1,0 +1,100 @@
+name: 2) ناقش الأرشيف
+
+# اسأل تسجيلاتك من أي مكان: Actions -> "ناقش الأرشيف" -> Run workflow
+# -> اكتب سؤالك. الرد يظهر في ملخص التشغيل فورًا، ويُحفظ في مجلد answers/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      question:
+        description: "سؤالك عن تسجيلاتك"
+        required: true
+        default: "إيه الأنماط والمواضيع اللي بتتكرر في تسجيلاتي؟"
+      since:
+        description: "من تاريخ YYYY-MM-DD (اختياري)"
+        required: false
+        default: ""
+      until:
+        description: "إلى تاريخ YYYY-MM-DD (اختياري)"
+        required: false
+        default: ""
+      save:
+        description: "احفظ الرد في مجلد answers/ داخل المستودع"
+        required: true
+        default: "نعم"
+        type: choice
+        options: ["نعم", "لا"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ask
+  cancel-in-progress: true
+
+jobs:
+  ask:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: تثبيت المتطلبات
+        run: pip install --quiet requests
+
+      - name: التحقق من المفتاح
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "### المفتاح غير مضبوط" >> "$GITHUB_STEP_SUMMARY"
+            echo "أضف \`GEMINI_API_KEY\` في: Settings -> Secrets and variables -> Actions." \
+              >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: السؤال
+        id: run
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          stamp=$(date +%Y%m%d-%H%M%S)
+          echo "stamp=$stamp" >> "$GITHUB_OUTPUT"
+          mkdir -p answers
+          python ask.py "${{ inputs.question }}" \
+            --journal journal \
+            --since "${{ inputs.since }}" \
+            --until "${{ inputs.until }}" \
+            --save "answers/$stamp.md" \
+            | tee /tmp/answer.txt
+
+      - name: عرض الرد في الملخص
+        if: always()
+        run: |
+          {
+            echo "## السؤال"
+            echo ""
+            echo "> ${{ inputs.question }}"
+            echo ""
+            echo "## الرد"
+            echo ""
+            cat /tmp/answer.txt 2>/dev/null || echo "_لم يصل رد._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: حفظ الرد في المستودع
+        if: ${{ inputs.save == 'نعم' }}
+        run: |
+          git config user.name  "ask-bot"
+          git config user.email "actions@github.com"
+          git add -A answers
+          if git diff --cached --quiet; then
+            echo "لا جديد للحفظ"
+          else
+            git commit -m "سؤال: ${{ inputs.question }}"
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
