@@ -54,8 +54,10 @@ def log(msg: str) -> None:
 
 
 def die(msg: str) -> "None":
-    print(f"\n[خطأ] {msg}", file=sys.stderr, flush=True)
-    sys.exit(1)
+    # نمرّر الرسالة نفسها لـ SystemExit (لا 1 فقط) حتى تصل كاملة لأي كود يمسك
+    # SystemExit ليتعامل مع الفشل بلطف (مثل compare.py وسلسلة موديلات Gemini)،
+    # مع بقاء نفس السلوك عند عدم مسكها: بايثون يطبع الرسالة على stderr ويخرج بكود 1.
+    raise SystemExit(f"[خطأ] {msg}")
 
 
 # ---------------------------------------------------------------- المفاتيح
@@ -346,43 +348,88 @@ def _post_json(url: str, payload: dict, headers: dict) -> dict:
     return {}
 
 
+#
+# سلسلة موديلات Gemini -- من الأقوى إلى الأكثر توفرًا في الطبقة المجانية.
+#
+# جوجل تُعيد تسمية/تُقاعِد أسماء موديلات Gemini كل بضعة أشهر (حصل بالفعل مع
+# gemini-2.5-flash -- رجع 404 "no longer available to new users"). فبدل اسم
+# ثابت واحد، نجرّب القائمة بالترتيب: أي فشل خاص بموديل معيّن (404 تقاعد،
+# 429 تجاوز حد الطبقة المجانية، 5xx عطل مؤقت) يسقط للموديل التالي تلقائيًا.
+# فقط خطأ مفتاح/تصريح حقيقي (401 أو "api key" في الرسالة) يوقف السلسلة كلها
+# فورًا -- لأنه سيفشل بنفس الشكل على كل موديل.
+#
+# للتخصيص بلا تعديل كود: متغيّر بيئة GEMINI_MODELS بفاصلة، مثلًا:
+#   GEMINI_MODELS=gemini-flash-latest,gemini-3.5-flash-lite
+DEFAULT_GEMINI_MODELS = [
+    "gemini-flash-latest",      # alias ذاتي التحديث -- يشير دائمًا لموديل Flash الحالي
+    "gemini-3.6-flash",         # الرائد الحالي في عيلة Flash
+    "gemini-3.5-flash-lite",    # أسرع وأرخص، توفر عالٍ في الطبقة المجانية
+    "gemini-2.5-flash-lite",    # احتياطي للحسابات التي ما زال لديها وصول للجيل الأقدم
+]
+
+
+def _gemini_model_cascade() -> list[str]:
+    raw = os.environ.get("GEMINI_MODELS", "").strip()
+    if raw:
+        return [m.strip() for m in raw.split(",") if m.strip()]
+    return list(DEFAULT_GEMINI_MODELS)
+
+
 def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[Line]:
-    """Gemini 2.5 Flash -- الطبقة المجانية. الأفضل للعامية لأنه يفهم السياق."""
+    """Gemini (سلسلة موديلات Flash) -- الطبقة المجانية. الأفضل للعامية لأنه يفهم السياق."""
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key:
         die("GEMINI_API_KEY غير موجود. احصل على مفتاح مجاني من"
             " https://aistudio.google.com/apikey")
 
-    model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash").strip()
     audio_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
-
-    data = _post_json(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
-        {
-            "contents": [{
-                "parts": [
-                    {"text": build_prompt(speakers, tail, hints)},
-                    {"inline_data": {"mime_type": "audio/ogg", "data": audio_b64}},
-                ]
-            }],
-            "generationConfig": {
-                "temperature": 0.0,          # صفر = أقل هلوسة
-                "maxOutputTokens": 65536,
-                # التفريغ لا يحتاج تفكيرًا -- إطفاؤه يوفّر وقتًا وتوكن
-                "thinkingConfig": {"thinkingBudget": 0},
-            },
+    payload = {
+        "contents": [{
+            "parts": [
+                {"text": build_prompt(speakers, tail, hints)},
+                {"inline_data": {"mime_type": "audio/ogg", "data": audio_b64}},
+            ]
+        }],
+        "generationConfig": {
+            "temperature": 0.0,          # صفر = أقل هلوسة
+            "maxOutputTokens": 65536,
+            # التفريغ لا يحتاج تفكيرًا -- إطفاؤه يوفّر وقتًا وتوكن
+            "thinkingConfig": {"thinkingBudget": 0},
         },
-        {"x-goog-api-key": key, "Content-Type": "application/json"},
-    )
+    }
+    headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
 
-    try:
-        parts = data["candidates"][0]["content"]["parts"]
-        text = "".join(p.get("text", "") for p in parts)
-    except (KeyError, IndexError):
-        reason = json.dumps(data)[:500]
-        die(f"مخرج Gemini غير متوقع:\n{reason}")
-        return []
-    return parse_timestamped(text)
+    models = [os.environ["GEMINI_MODEL"]] if os.environ.get("GEMINI_MODEL", "").strip() else _gemini_model_cascade()
+    last_error = ""
+    for i, model in enumerate(models):
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        try:
+            data = _post_json(url, payload, headers)
+        except SystemExit as exc:
+            msg = str(exc)
+            # مشكلة مفتاح/تصريح حقيقية -- ستفشل بنفس الشكل على كل موديل، لا فائدة من المحاولة أكثر
+            if "api key" in msg.lower() or "401" in msg[:60]:
+                raise
+            last_error = msg
+            log(f"    الموديل '{model}' فشل -- محاولة الموديل التالي في السلسلة...")
+            continue
+
+        try:
+            parts = data["candidates"][0]["content"]["parts"]
+            text = "".join(p.get("text", "") for p in parts)
+        except (KeyError, IndexError):
+            last_error = json.dumps(data)[:500]
+            log(f"    مخرج غير متوقع من '{model}' -- محاولة الموديل التالي في السلسلة...")
+            continue
+
+        if i > 0:
+            log(f"    نجح عبر الموديل '{model}' (بعد سقوط {i} من السلسلة)")
+        return parse_timestamped(text)
+
+    die(f"كل موديلات Gemini في السلسلة فشلت. آخر خطأ:\n{last_error[:800]}"
+        f"\nالسلسلة المستخدمة: {models}\n"
+        "خصّصها عبر متغيّر البيئة GEMINI_MODELS (بفاصلة) لو تحتاج موديلات مختلفة.")
+    return []
 
 
 def transcribe_groq(path: Path, speakers: int, tail: str, hints: str) -> list[Line]:
