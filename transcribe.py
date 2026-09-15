@@ -324,27 +324,45 @@ def parse_timestamped(raw: str) -> list[Line]:
     return lines
 
 
-def _post_json(url: str, payload: dict, headers: dict) -> dict:
+def _post_json(url: str, payload: dict, headers: dict,
+               max_retries: int = 5) -> dict:
+    """
+    طلب POST مع إعادة محاولة على الأعطال المؤقتة (429 و5xx).
+
+    `max_retries` هو عدد المحاولات على **نفس** العنوان قبل الاستسلام:
+
+    - الافتراضي 5 يحافظ على سلوك `ask.py`، حيث لا يوجد بديل عن الطلب: إن فشل
+      فقد فشل السؤال كله، فالانتظار أفضل من الفشل.
+    - سلسلة موديلات Gemini تمرّر رقمًا **صغيرًا** عن قصد. الانتظار الطويل على
+      موديل مشغول لا معنى له وقد يوجد موديل آخر بحصّة مستقلة تمامًا: السقوط
+      للتالي أسرع وأرجح نجاحًا من الانتظار. بـ 5 محاولات كان كل موديل ميت أو
+      مشغول يكلّف ٢٠+٤٠+٦٠+٨٠+١٠٠ = **خمس دقائق** قبل تجربة التالي، أي ربع
+      ساعة على سلسلة من ثلاثة. هذا يقتل أي تشغيل مجدول.
+    """
     import requests
     last_err = ""
-    for attempt in range(5):
+    attempts = max(1, int(max_retries))
+    for attempt in range(attempts):
         try:
             r = requests.post(url, json=payload, headers=headers, timeout=HTTP_TIMEOUT)
         except Exception as exc:  # شبكة متقطعة
             last_err = str(exc)
-            time.sleep(4 * (attempt + 1))
+            if attempt + 1 < attempts:
+                time.sleep(min(4 * (attempt + 1), 30))
             continue
         if r.status_code == 200:
             return r.json()
         # 429 = تجاوزنا حد الطبقة المجانية، 5xx = عطل مؤقت -> نعيد المحاولة
         if r.status_code == 429 or r.status_code >= 500:
-            wait = 20 * (attempt + 1)
+            last_err = f"HTTP {r.status_code}: {r.text[:400]}"
+            if attempt + 1 >= attempts:
+                break                      # لا تنم قبل الاستسلام -- انتظار مهدور
+            wait = min(20 * (attempt + 1), 60)
             log(f"    الخدمة مشغولة ({r.status_code}) -- إعادة محاولة بعد {wait}ث")
-            last_err = r.text[:400]
             time.sleep(wait)
             continue
         die(f"المزود رفض الطلب ({r.status_code}):\n{r.text[:800]}")
-    die(f"فشل الطلب بعد 5 محاولات. آخر خطأ:\n{last_err[:800]}")
+    die(f"فشل الطلب بعد {attempts} محاولة. آخر خطأ:\n{last_err[:800]}")
     return {}
 
 
@@ -364,8 +382,12 @@ DEFAULT_GEMINI_MODELS = [
     "gemini-flash-latest",      # alias ذاتي التحديث -- يشير دائمًا لموديل Flash الحالي
     "gemini-3.6-flash",         # الرائد الحالي في عيلة Flash
     "gemini-3.5-flash-lite",    # أسرع وأرخص، توفر عالٍ في الطبقة المجانية
-    "gemini-2.5-flash-lite",    # احتياطي للحسابات التي ما زال لديها وصول للجيل الأقدم
 ]
+# أُزيل "gemini-2.5-flash-lite": تقاعد فعلًا، ورُصد يرجع 404 في تشغيل حقيقي
+# ("no longer available to new users ... use models/gemini-3.5-flash-lite").
+# لا حاجة لإضافة بدائل يدويًا بعد الآن: النمط أدناه يقرأ اسم البديل من نص
+# الخطأ نفسه ويجرّبه فورًا، فالسلسلة تُصلح نفسها عند أي تقاعد لاحق.
+_RETIRED_REPLACEMENT = re.compile(r"use\s+models/([A-Za-z0-9._\-]+)")
 
 
 def _gemini_model_cascade() -> list[str]:
@@ -400,18 +422,43 @@ def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[
     headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
 
     models = [os.environ["GEMINI_MODEL"]] if os.environ.get("GEMINI_MODEL", "").strip() else _gemini_model_cascade()
+
+    # محاولات قليلة عن قصد: موديل مشغول لا يستحق الانتظار عندما يوجد موديل آخر
+    # بحصّة مستقلة. قياس حقيقي: بـ 5 محاولات استهلكت السلسلة 1012 ثانية ثم فشلت.
+    try:
+        per_model_retries = max(1, int(os.environ.get("GEMINI_RETRIES", "2")))
+    except ValueError:
+        per_model_retries = 2
+
+    queue = list(models)
+    tried: list[str] = []
     last_error = ""
-    for i, model in enumerate(models):
+
+    while queue:
+        model = queue.pop(0)
+        if model in tried:
+            continue
+        tried.append(model)
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         try:
-            data = _post_json(url, payload, headers)
+            data = _post_json(url, payload, headers, max_retries=per_model_retries)
         except SystemExit as exc:
             msg = str(exc)
             # مشكلة مفتاح/تصريح حقيقية -- ستفشل بنفس الشكل على كل موديل، لا فائدة من المحاولة أكثر
             if "api key" in msg.lower() or "401" in msg[:60]:
                 raise
             last_error = msg
-            log(f"    الموديل '{model}' فشل -- محاولة الموديل التالي في السلسلة...")
+
+            # عند تقاعد موديل، جوجل تُرجع 404 وتسمّي البديل صراحةً في نص الخطأ:
+            # "This model ... is no longer available. Please update your code to
+            #  use models/X". فنتبع البديل فورًا بدل انتظار تحديث يدوي للقائمة.
+            hint = _RETIRED_REPLACEMENT.search(msg)
+            if hint and hint.group(1) not in tried:
+                repl = hint.group(1)
+                queue.insert(0, repl)
+                log(f"    '{model}' متقاعد -- الخدمة تقترح '{repl}'، أجرّبه فورًا")
+            else:
+                log(f"    الموديل '{model}' فشل -- التالي في السلسلة...")
             continue
 
         try:
@@ -419,16 +466,20 @@ def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[
             text = "".join(p.get("text", "") for p in parts)
         except (KeyError, IndexError):
             last_error = json.dumps(data)[:500]
-            log(f"    مخرج غير متوقع من '{model}' -- محاولة الموديل التالي في السلسلة...")
+            log(f"    مخرج غير متوقع من '{model}' -- التالي في السلسلة...")
             continue
 
-        if i > 0:
-            log(f"    نجح عبر الموديل '{model}' (بعد سقوط {i} من السلسلة)")
+        if len(tried) > 1:
+            log(f"    نجح عبر الموديل '{model}' (بعد سقوط {len(tried)-1})")
         return parse_timestamped(text)
 
-    die(f"كل موديلات Gemini في السلسلة فشلت. آخر خطأ:\n{last_error[:800]}"
-        f"\nالسلسلة المستخدمة: {models}\n"
-        "خصّصها عبر متغيّر البيئة GEMINI_MODELS (بفاصلة) لو تحتاج موديلات مختلفة.")
+    busy = "503" in last_error or "429" in last_error or "overloaded" in last_error.lower()
+    die(f"كل موديلات Gemini فشلت. آخر خطأ:\n{last_error[:800]}"
+        f"\nالموديلات المُجرَّبة بالترتيب: {tried}\n"
+        + ("الأخطاء من نوع ازدحام (503/429) لا عيب في المفتاح ولا في الكود:"
+           " الخدمة كانت مشغولة فعلًا. أعد المحاولة لاحقًا، أو استخدم"
+           " --provider groq الآن.\n" if busy else
+           "خصّصها عبر متغيّر البيئة GEMINI_MODELS (بفاصلة).\n"))
     return []
 
 
