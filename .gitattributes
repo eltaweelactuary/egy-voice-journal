@@ -1,0 +1,19 @@
+# ثبّت نهايات الأسطر على LF لكل ما يُنفَّذ على لينكس.
+# السبب: لو عدّل جهاز ويندوز ملف workflow ودفعه بنهايات CRLF، تنكسر
+# سكربتات bash على runners أوبنتو بخطأ غامض مثل: $'\r': command not found
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.sh    text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+
+# ملفات الصوت ثنائية -- لا تلمسها
+*.mp3   binary
+*.m4a   binary
+*.wav   binary
+*.ogg   binary
+*.opus  binary
+*.flac  binary
+*.aac   binary
+*.amr   binary
