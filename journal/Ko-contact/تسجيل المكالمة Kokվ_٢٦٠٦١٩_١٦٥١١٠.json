@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦١٩_١٦٥١١٠",
+    "date": "2026-09-17 21:56",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦١٩_١٦٥١١٠.m4a",
+    "duration": 34.58725,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 12,
+    "words": 19
+  },
+  "lines": [
+    {
+      "start": 0.17999999,
+      "speaker": null,
+      "text": "أهلا.",
+      "normalized": "اهلا"
+    },
+    {
+      "start": 2.3,
+      "speaker": null,
+      "text": "أي.",
+      "normalized": "اي"
+    },
+    {
+      "start": 3.8,
+      "speaker": null,
+      "text": "أهلا.",
+      "normalized": "اهلا"
+    },
+    {
+      "start": 8.559999,
+      "speaker": null,
+      "text": "أهلا.",
+      "normalized": "اهلا"
+    },
+    {
+      "start": 10.38,
+      "speaker": null,
+      "text": "انتي في.",
+      "normalized": "انتي في"
+    },
+    {
+      "start": 12.719999,
+      "speaker": null,
+      "text": "شلبي طالع.",
+      "normalized": "شلبي طالع"
+    },
+    {
+      "start": 17.42,
+      "speaker": null,
+      "text": "طالع.",
+      "normalized": "طالع"
+    },
+    {
+      "start": 19.6,
+      "speaker": null,
+      "text": "إيه.",
+      "normalized": "ايه"
+    },
+    {
+      "start": 22.119999,
+      "speaker": null,
+      "text": "تعملي.",
+      "normalized": "تعملي"
+    },
+    {
+      "start": 23.3,
+      "speaker": null,
+      "text": "كنت عندك إبقى.",
+      "normalized": "كنت عندك ابقي"
+    },
+    {
+      "start": 27.519999,
+      "speaker": null,
+      "text": "ما إشي.",
+      "normalized": "ما اشي"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "أنا تلايك أغو.",
+      "normalized": "انا تلايك اغو"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "Ko-contact — مكالمة Kokվ_٢٦٠٧١١_١٢٣٦٥٩",
+    "date": "2026-09-17 21:54",
+    "source": "مكالمة Kokվ_٢٦٠٧١١_١٢٣٦٥٩.m4a",
+    "duration": 16.667563,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 4,
+    "words": 9
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "ترجونا للمحل.",
+      "normalized": "ترجونا للمحل"
+    },
+    {
+      "start": 5.64,
+      "speaker": null,
+      "text": "عشان او صار.",
+      "normalized": "عشان او صار"
+    },
+    {
+      "start": 8.679999,
+      "speaker": null,
+      "text": "نيش.",
+      "normalized": "نيش"
+    },
+    {
+      "start": 9.679999,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    }
+  ]
+}

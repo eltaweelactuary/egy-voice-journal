@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٦٤١٠٤",
+    "date": "2026-09-17 21:57",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٦٤١٠٤.m4a",
+    "duration": 35.73925,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 6,
+    "words": 14
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحبا بكم.",
+      "normalized": "مرحبا بكم"
+    },
+    {
+      "start": 8.04,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 12.04,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 16.039999,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 20.039999,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 24.039999,
+      "speaker": null,
+      "text": "بحمد رمي. طب تعالي خش على البطاعة دي.",
+      "normalized": "بحمد رمي طب تعالي خش علي البطاعه دي"
+    }
+  ]
+}

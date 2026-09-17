@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "Ko-contact — مكالمة Kokվ_٢٦٠٧١١_١٢٥٤٠٢",
+    "date": "2026-09-17 22:02",
+    "source": "مكالمة Kokվ_٢٦٠٧١١_١٢٥٤٠٢.m4a",
+    "duration": 49.051063,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 6,
+    "words": 8
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "الو.",
+      "normalized": "الو"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "وصلتي.",
+      "normalized": "وصلتي"
+    },
+    {
+      "start": 35.54,
+      "speaker": null,
+      "text": "اه انتي دي.",
+      "normalized": "اه انتي دي"
+    },
+    {
+      "start": 41.16,
+      "speaker": null,
+      "text": "سطح.",
+      "normalized": "سطح"
+    },
+    {
+      "start": 44.5,
+      "speaker": null,
+      "text": "سطح.",
+      "normalized": "سطح"
+    },
+    {
+      "start": 46.16,
+      "speaker": null,
+      "text": "سطح.",
+      "normalized": "سطح"
+    }
+  ]
+}

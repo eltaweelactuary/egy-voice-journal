@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٣٠_٢٣٣٢٠٥",
+    "date": "2026-09-17 22:03",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٣٠_٢٣٣٢٠٥.m4a",
+    "duration": 50.928375,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 14,
+    "words": 34
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحلتك.",
+      "normalized": "مرحلتك"
+    },
+    {
+      "start": 5.0,
+      "speaker": null,
+      "text": "مرحلتي.",
+      "normalized": "مرحلتي"
+    },
+    {
+      "start": 7.0,
+      "speaker": null,
+      "text": "مرحلتي.",
+      "normalized": "مرحلتي"
+    },
+    {
+      "start": 9.0,
+      "speaker": null,
+      "text": "مرحلتي.",
+      "normalized": "مرحلتي"
+    },
+    {
+      "start": 12.0,
+      "speaker": null,
+      "text": "مرحلتي.",
+      "normalized": "مرحلتي"
+    },
+    {
+      "start": 14.0,
+      "speaker": null,
+      "text": "هل تحبين أمي؟",
+      "normalized": "هل تحبين امي"
+    },
+    {
+      "start": 17.0,
+      "speaker": null,
+      "text": "نعم.",
+      "normalized": "نعم"
+    },
+    {
+      "start": 19.0,
+      "speaker": null,
+      "text": "أمي؟",
+      "normalized": "امي"
+    },
+    {
+      "start": 22.0,
+      "speaker": null,
+      "text": "لا أحب.",
+      "normalized": "لا احب"
+    },
+    {
+      "start": 23.0,
+      "speaker": null,
+      "text": "نعم.",
+      "normalized": "نعم"
+    },
+    {
+      "start": 27.92,
+      "speaker": null,
+      "text": "طب أنا أنا كنت عايز أكلمك بجي.",
+      "normalized": "طب انا انا كنت عايز اكلمك بجي"
+    },
+    {
+      "start": 34.92,
+      "speaker": null,
+      "text": "كنت ينسي ولا ايه.",
+      "normalized": "كنت ينسي ولا ايه"
+    },
+    {
+      "start": 40.92,
+      "speaker": null,
+      "text": "كنت ينسي ولا ايه.",
+      "normalized": "كنت ينسي ولا ايه"
+    },
+    {
+      "start": 48.42,
+      "speaker": null,
+      "text": "هكلمك على الفور على الـ time.",
+      "normalized": "هكلمك علي الفور علي ال time"
+    }
+  ]
+}

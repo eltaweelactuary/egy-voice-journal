@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦١٨_١٧٤٢٤٢",
+    "date": "2026-09-17 21:53",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦١٨_١٧٤٢٤٢.m4a",
+    "duration": 11.376938,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 3,
+    "words": 8
+  },
+  "lines": [
+    {
+      "start": 2.0,
+      "speaker": "متحدث ١",
+      "text": "ألو",
+      "normalized": "الو"
+    },
+    {
+      "start": 3.0,
+      "speaker": "متحدث ٢",
+      "text": "[غير واضح]",
+      "normalized": "غير واضح"
+    },
+    {
+      "start": 4.0,
+      "speaker": "متحدث ٢",
+      "text": "ما اتصورتيش؟ صوري المكان وابعتيلي.",
+      "normalized": "ما اتصورتيش صوري المكان وابعتيلي"
+    }
+  ]
+}

@@ -1,0 +1,1604 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٩٠٣٢٦",
+    "date": "2026-09-17 23:02",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٩٠٣٢٦.m4a",
+    "duration": 2527.561688,
+    "provider": "consensus",
+    "chunks": 3,
+    "lines": 265,
+    "words": 1039
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 60.0,
+      "speaker": null,
+      "text": "شكي.",
+      "normalized": "شكي"
+    },
+    {
+      "start": 74.0,
+      "speaker": null,
+      "text": "مرمش.",
+      "normalized": "مرمش"
+    },
+    {
+      "start": 84.0,
+      "speaker": null,
+      "text": "مرش.",
+      "normalized": "مرش"
+    },
+    {
+      "start": 94.0,
+      "speaker": null,
+      "text": "أملكم؟",
+      "normalized": "املكم"
+    },
+    {
+      "start": 124.0,
+      "speaker": null,
+      "text": "مش قادرة نزل.",
+      "normalized": "مش قادره نزل"
+    },
+    {
+      "start": 130.0,
+      "speaker": null,
+      "text": "مش قادرة نزل.",
+      "normalized": "مش قادره نزل"
+    },
+    {
+      "start": 144.0,
+      "speaker": null,
+      "text": "خلت يا كوكو؟",
+      "normalized": "خلت يا كوكو"
+    },
+    {
+      "start": 146.0,
+      "speaker": null,
+      "text": "كانت موجودة.",
+      "normalized": "كانت موجوده"
+    },
+    {
+      "start": 154.0,
+      "speaker": null,
+      "text": "ايوه افلت يعني.",
+      "normalized": "ايوه افلت يعني"
+    },
+    {
+      "start": 184.0,
+      "speaker": null,
+      "text": "شلتهم.",
+      "normalized": "شلتهم"
+    },
+    {
+      "start": 195.5,
+      "speaker": null,
+      "text": "حكيلي حبيبتي حسبين.",
+      "normalized": "حكيلي حبيبتي حسبين"
+    },
+    {
+      "start": 250.26837,
+      "speaker": null,
+      "text": "سنحا.",
+      "normalized": "سنحا"
+    },
+    {
+      "start": 260.26837,
+      "speaker": null,
+      "text": "تولي.",
+      "normalized": "تولي"
+    },
+    {
+      "start": 263.26837,
+      "speaker": null,
+      "text": "مش بقوا.",
+      "normalized": "مش بقوا"
+    },
+    {
+      "start": 268.26837,
+      "speaker": null,
+      "text": "بحكي.",
+      "normalized": "بحكي"
+    },
+    {
+      "start": 269.26837,
+      "speaker": null,
+      "text": "جمعيني روحي.",
+      "normalized": "جمعيني روحي"
+    },
+    {
+      "start": 299.26837,
+      "speaker": null,
+      "text": "مرأت تحبيني ذو؟",
+      "normalized": "مرات تحبيني ذو"
+    },
+    {
+      "start": 306.26837,
+      "speaker": null,
+      "text": "اي.",
+      "normalized": "اي"
+    },
+    {
+      "start": 309.26837,
+      "speaker": null,
+      "text": "تحبيني ذو؟",
+      "normalized": "تحبيني ذو"
+    },
+    {
+      "start": 312.26837,
+      "speaker": null,
+      "text": "اي ما بحب.",
+      "normalized": "اي ما بحب"
+    },
+    {
+      "start": 323.26837,
+      "speaker": null,
+      "text": "تسألي علادي.",
+      "normalized": "تسالي علادي"
+    },
+    {
+      "start": 329.26837,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 339.02838,
+      "speaker": null,
+      "text": "عايزك تحس سيبك كأننا مع بعض. حسب ايه لما شلت كل الوضع دي.",
+      "normalized": "عايزك تحس سيبك كاننا مع بعض حسب ايه لما شلت كل الوضع دي"
+    },
+    {
+      "start": 349.32837,
+      "speaker": null,
+      "text": "كده احلى.",
+      "normalized": "كده احلي"
+    },
+    {
+      "start": 353.32837,
+      "speaker": null,
+      "text": "الفرق.",
+      "normalized": "الفرق"
+    },
+    {
+      "start": 357.32837,
+      "speaker": null,
+      "text": "ممكن حرية.",
+      "normalized": "ممكن حريه"
+    },
+    {
+      "start": 359.32837,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 361.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 363.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 365.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 367.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 369.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 371.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 373.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 375.32837,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 377.32837,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 407.32837,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 464.23676,
+      "speaker": null,
+      "text": "حساب.",
+      "normalized": "حساب"
+    },
+    {
+      "start": 469.25674,
+      "speaker": null,
+      "text": "حساب.",
+      "normalized": "حساب"
+    },
+    {
+      "start": 475.53674,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 505.53674,
+      "speaker": null,
+      "text": "ايوة حبيبتي عايزك تلعب بيها.",
+      "normalized": "ايوه حبيبتي عايزك تلعب بيها"
+    },
+    {
+      "start": 513.53674,
+      "speaker": null,
+      "text": "تعرفي تحطيها في بؤك.",
+      "normalized": "تعرفي تحطيها في بوك"
+    },
+    {
+      "start": 521.53674,
+      "speaker": null,
+      "text": "انا بيتنا طولها سايه نازيات.",
+      "normalized": "انا بيتنا طولها سايه نازيات"
+    },
+    {
+      "start": 527.53674,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 557.53674,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    },
+    {
+      "start": 587.53674,
+      "speaker": null,
+      "text": "مرحلت تنعيد خرية.",
+      "normalized": "مرحلت تنعيد خريه"
+    },
+    {
+      "start": 617.53674,
+      "speaker": null,
+      "text": "حلو.",
+      "normalized": "حلو"
+    },
+    {
+      "start": 626.43677,
+      "speaker": null,
+      "text": "ماشي يا كوكو.",
+      "normalized": "ماشي يا كوكو"
+    },
+    {
+      "start": 634.93677,
+      "speaker": null,
+      "text": "انتي مازكة التليفون?",
+      "normalized": "انتي مازكه التليفون"
+    },
+    {
+      "start": 639.1367,
+      "speaker": null,
+      "text": "نعم. حلو عايز ايد عند عند صدرك وايد.",
+      "normalized": "نعم حلو عايز ايد عند عند صدرك وايد"
+    },
+    {
+      "start": 646.1367,
+      "speaker": null,
+      "text": "تبقى تحت عند البذر.",
+      "normalized": "تبقي تحت عند البذر"
+    },
+    {
+      "start": 662.3767,
+      "speaker": null,
+      "text": "عايز حبيبتي صوتك يطلع كل الحليب مرة واحدة.",
+      "normalized": "عايز حبيبتي صوتك يطلع كل الحليب مره واحده"
+    },
+    {
+      "start": 700.8051,
+      "speaker": null,
+      "text": "حاجة كبيرة.",
+      "normalized": "حاجه كبيره"
+    },
+    {
+      "start": 710.8051,
+      "speaker": null,
+      "text": "حبيبتي.",
+      "normalized": "حبيبتي"
+    },
+    {
+      "start": 714.8051,
+      "speaker": null,
+      "text": "افتح ركليكي كده وافتح الشفارات بصوابك.",
+      "normalized": "افتح ركليكي كده وافتح الشفارات بصوابك"
+    },
+    {
+      "start": 719.8051,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 728.8051,
+      "speaker": null,
+      "text": "طحتيهم.",
+      "normalized": "طحتيهم"
+    },
+    {
+      "start": 732.8051,
+      "speaker": null,
+      "text": "آه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 735.8051,
+      "speaker": null,
+      "text": "طحتيهم لي كده.",
+      "normalized": "طحتيهم لي كده"
+    },
+    {
+      "start": 739.8051,
+      "speaker": null,
+      "text": "طحتيهم ليه?",
+      "normalized": "طحتيهم ليه"
+    },
+    {
+      "start": 744.8051,
+      "speaker": null,
+      "text": "ممتابت.",
+      "normalized": "ممتابت"
+    },
+    {
+      "start": 747.8051,
+      "speaker": null,
+      "text": "ايه.",
+      "normalized": "ايه"
+    },
+    {
+      "start": 748.8051,
+      "speaker": null,
+      "text": "ميتابت.",
+      "normalized": "ميتابت"
+    },
+    {
+      "start": 750.8051,
+      "speaker": null,
+      "text": "ايوه. رشان ايه.",
+      "normalized": "ايوه رشان ايه"
+    },
+    {
+      "start": 757.8051,
+      "speaker": null,
+      "text": "ايه.",
+      "normalized": "ايه"
+    },
+    {
+      "start": 758.8051,
+      "speaker": null,
+      "text": "رشان يبقى في مكاملين.",
+      "normalized": "رشان يبقي في مكاملين"
+    },
+    {
+      "start": 761.8051,
+      "speaker": null,
+      "text": "ممم.",
+      "normalized": "ممم"
+    },
+    {
+      "start": 769.0051,
+      "speaker": null,
+      "text": "هذا النام يد النوت.",
+      "normalized": "هذا النام يد النوت"
+    },
+    {
+      "start": 774.6651,
+      "speaker": null,
+      "text": "مم.",
+      "normalized": "مم"
+    },
+    {
+      "start": 778.64514,
+      "speaker": null,
+      "text": "نعم سابق ساق.",
+      "normalized": "نعم سابق ساق"
+    },
+    {
+      "start": 782.0851,
+      "speaker": null,
+      "text": "طيب.",
+      "normalized": "طيب"
+    },
+    {
+      "start": 787.82513,
+      "speaker": null,
+      "text": "مم.",
+      "normalized": "مم"
+    },
+    {
+      "start": 791.8051,
+      "speaker": null,
+      "text": "حبيبتي.",
+      "normalized": "حبيبتي"
+    },
+    {
+      "start": 800.8051,
+      "speaker": null,
+      "text": "امسكي بيدك حبيبتي دخلي بيدك.",
+      "normalized": "امسكي بيدك حبيبتي دخلي بيدك"
+    },
+    {
+      "start": 806.8051,
+      "speaker": null,
+      "text": "اه. دخلي بالراحة.",
+      "normalized": "اه دخلي بالراحه"
+    },
+    {
+      "start": 813.8051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 816.8051,
+      "speaker": null,
+      "text": "وانا وانا هحضنك واركب فوقيك يا كوكو.",
+      "normalized": "وانا وانا هحضنك واركب فوقيك يا كوكو"
+    },
+    {
+      "start": 826.8051,
+      "speaker": null,
+      "text": "حبيبتي. اهو. دخلتي. اهو.",
+      "normalized": "حبيبتي اهو دخلتي اهو"
+    },
+    {
+      "start": 834.8051,
+      "speaker": null,
+      "text": "امسكي بقى البضن عامل لها مساج. قل لما تيجي تخش وتطلع.",
+      "normalized": "امسكي بقي البضن عامل لها مساج قل لما تيجي تخش وتطلع"
+    },
+    {
+      "start": 846.8051,
+      "speaker": null,
+      "text": "انا هدخله وطلعه.",
+      "normalized": "انا هدخله وطلعه"
+    },
+    {
+      "start": 855.8051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 859.8051,
+      "speaker": null,
+      "text": "اه. اه حبتي. اه. اه. بنيعمل ايه يا",
+      "normalized": "اه اه حبتي اه اه بنيعمل ايه يا"
+    },
+    {
+      "start": 868.8051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 873.3051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 878.3051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 885.3051,
+      "speaker": null,
+      "text": "يحن.",
+      "normalized": "يحن"
+    },
+    {
+      "start": 891.3051,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 894.3051,
+      "speaker": null,
+      "text": "نعملين كوكب",
+      "normalized": "نعملين كوكب"
+    },
+    {
+      "start": 901.055313,
+      "speaker": null,
+      "text": "ترجعالك.",
+      "normalized": "ترجعالك"
+    },
+    {
+      "start": 931.055313,
+      "speaker": null,
+      "text": "بوليل بيعمل ايه?",
+      "normalized": "بوليل بيعمل ايه"
+    },
+    {
+      "start": 940.1953129999999,
+      "speaker": null,
+      "text": "يدخل. يدخل يعمل ايه?",
+      "normalized": "يدخل يدخل يعمل ايه"
+    },
+    {
+      "start": 947.4553129999999,
+      "speaker": null,
+      "text": "ايه? يدخل يدخل يدخل يدلعك?",
+      "normalized": "ايه يدخل يدخل يدخل يدلعك"
+    },
+    {
+      "start": 958.3353129999999,
+      "speaker": null,
+      "text": "مه. ما يعمل معك قلة القدم?",
+      "normalized": "مه ما يعمل معك قله القدم"
+    },
+    {
+      "start": 964.0953099999999,
+      "speaker": null,
+      "text": "مه. يدخل بينكك?",
+      "normalized": "مه يدخل بينكك"
+    },
+    {
+      "start": 969.8553079999999,
+      "speaker": null,
+      "text": "لا.",
+      "normalized": "لا"
+    },
+    {
+      "start": 972.4953079999999,
+      "speaker": null,
+      "text": "حبيبتي.",
+      "normalized": "حبيبتي"
+    },
+    {
+      "start": 976.0953129999999,
+      "speaker": null,
+      "text": "تعرف يتحركي وزدك يحصره جوهر?",
+      "normalized": "تعرف يتحركي وزدك يحصره جوهر"
+    },
+    {
+      "start": 983.8553079999999,
+      "speaker": null,
+      "text": "مرحبا بكم في القناة.",
+      "normalized": "مرحبا بكم في القناه"
+    },
+    {
+      "start": 1013.8553079999999,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 1043.855313,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 1073.855313,
+      "speaker": null,
+      "text": "شبعي حبيبتي.",
+      "normalized": "شبعي حبيبتي"
+    },
+    {
+      "start": 1103.855313,
+      "speaker": null,
+      "text": "كوكسك مبسوط؟",
+      "normalized": "كوكسك مبسوط"
+    },
+    {
+      "start": 1105.855313,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1107.855313,
+      "speaker": null,
+      "text": "مبسوط اصدقائي؟ يحبني اكتر؟",
+      "normalized": "مبسوط اصدقايي يحبني اكتر"
+    },
+    {
+      "start": 1111.855313,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1113.855313,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1115.855313,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1151.2536929999999,
+      "speaker": null,
+      "text": "حبيبتي. نعم.",
+      "normalized": "حبيبتي نعم"
+    },
+    {
+      "start": 1154.693693,
+      "speaker": null,
+      "text": "حشتين.",
+      "normalized": "حشتين"
+    },
+    {
+      "start": 1159.893693,
+      "speaker": null,
+      "text": "اه. مبسكتهش ليه حبيبتي في الفرح? اه. كان نفسك تمسكي.",
+      "normalized": "اه مبسكتهش ليه حبيبتي في الفرح اه كان نفسك تمسكي"
+    },
+    {
+      "start": 1169.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1175.893693,
+      "speaker": null,
+      "text": "لو كنت مسكتي مش كنت ربي مبسوطة. اه.",
+      "normalized": "لو كنت مسكتي مش كنت ربي مبسوطه اه"
+    },
+    {
+      "start": 1186.4937129999998,
+      "speaker": null,
+      "text": "اه. انت شفت حبيبتي الشهوة بتاعته بالبلل لما نقط.",
+      "normalized": "اه انت شفت حبيبتي الشهوه بتاعته بالبلل لما نقط"
+    },
+    {
+      "start": 1199.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1204.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1208.393693,
+      "speaker": null,
+      "text": "هو نقط بس اللي هو نقط الشهوة زي بتعطيك كده. لكن طبعا ما نزلتش.",
+      "normalized": "هو نقط بس اللي هو نقط الشهوه زي بتعطيك كده لكن طبعا ما نزلتش"
+    },
+    {
+      "start": 1218.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1220.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1223.393693,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1253.393693,
+      "speaker": null,
+      "text": "ايوه انا كنت عايز اقلعك اللي سلب.",
+      "normalized": "ايوه انا كنت عايز اقلعك اللي سلب"
+    },
+    {
+      "start": 1261.393693,
+      "speaker": null,
+      "text": "واعلمك ازاي اه تلعب في بوزرك.",
+      "normalized": "واعلمك ازاي اه تلعب في بوزرك"
+    },
+    {
+      "start": 1268.593713,
+      "speaker": null,
+      "text": "كنت عايز اعلمك ازاي تلعب في بوزرك.",
+      "normalized": "كنت عايز اعلمك ازاي تلعب في بوزرك"
+    },
+    {
+      "start": 1278.393693,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1283.393693,
+      "speaker": null,
+      "text": "كمان.",
+      "normalized": "كمان"
+    },
+    {
+      "start": 1294.033713,
+      "speaker": null,
+      "text": "عايزة الحليب ينزل كواكي.",
+      "normalized": "عايزه الحليب ينزل كواكي"
+    },
+    {
+      "start": 1299.633683,
+      "speaker": null,
+      "text": "عشان يطفي شهوتك.",
+      "normalized": "عشان يطفي شهوتك"
+    },
+    {
+      "start": 1307.393693,
+      "speaker": null,
+      "text": "احببتي.",
+      "normalized": "احببتي"
+    },
+    {
+      "start": 1313.393693,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1315.893693,
+      "speaker": null,
+      "text": "أه حبيبتي.",
+      "normalized": "اه حبيبتي"
+    },
+    {
+      "start": 1319.513683,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1320.613693,
+      "speaker": null,
+      "text": "عارفة لو حملتي دلوقتي",
+      "normalized": "عارفه لو حملتي دلوقتي"
+    },
+    {
+      "start": 1322.3136729999999,
+      "speaker": null,
+      "text": "يبقى هنخلف بعد ست شهور.",
+      "normalized": "يبقي هنخلف بعد ست شهور"
+    },
+    {
+      "start": 1327.693683,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1329.353713,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1332.113693,
+      "speaker": null,
+      "text": "أسي.",
+      "normalized": "اسي"
+    },
+    {
+      "start": 1333.353713,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1335.253673,
+      "speaker": null,
+      "text": "أه معلشان شهرين",
+      "normalized": "اه معلشان شهرين"
+    },
+    {
+      "start": 1337.853713,
+      "speaker": null,
+      "text": "نغاية الجوز.",
+      "normalized": "نغايه الجوز"
+    },
+    {
+      "start": 1364.952073,
+      "speaker": null,
+      "text": "عشان انت بتحبي الحبيب جوكي وانا كمان.",
+      "normalized": "عشان انت بتحبي الحبيب جوكي وانا كمان"
+    },
+    {
+      "start": 1370.452073,
+      "speaker": null,
+      "text": "جلتي اخدت الحباية.",
+      "normalized": "جلتي اخدت الحبايه"
+    },
+    {
+      "start": 1387.452073,
+      "speaker": null,
+      "text": "علي صوتك.",
+      "normalized": "علي صوتك"
+    },
+    {
+      "start": 1400.452073,
+      "speaker": null,
+      "text": "علي صوتك.",
+      "normalized": "علي صوتك"
+    },
+    {
+      "start": 1408.392073,
+      "speaker": null,
+      "text": "بقول لك مش انت اخدت حبوب من الحب.",
+      "normalized": "بقول لك مش انت اخدت حبوب من الحب"
+    },
+    {
+      "start": 1413.5920529999999,
+      "speaker": null,
+      "text": "خلاص انا اخدها بعد في في بعد حاجة اسمها بلين بي.",
+      "normalized": "خلاص انا اخدها بعد في في بعد حاجه اسمها بلين بي"
+    },
+    {
+      "start": 1424.212053,
+      "speaker": null,
+      "text": "افتحيلي حبيبتي.",
+      "normalized": "افتحيلي حبيبتي"
+    },
+    {
+      "start": 1430.452013,
+      "speaker": null,
+      "text": "أه أه أه حبيبتي.",
+      "normalized": "اه اه اه حبيبتي"
+    },
+    {
+      "start": 1439.452013,
+      "speaker": null,
+      "text": "إنك معك حلو.",
+      "normalized": "انك معك حلو"
+    },
+    {
+      "start": 1443.452013,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1445.452013,
+      "speaker": null,
+      "text": "أعلي صوتك.",
+      "normalized": "اعلي صوتك"
+    },
+    {
+      "start": 1447.452013,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1451.452013,
+      "speaker": null,
+      "text": "طلع كل صوتك حبيبتي. أعلي صوتك أكثر.",
+      "normalized": "طلع كل صوتك حبيبتي اعلي صوتك اكثر"
+    },
+    {
+      "start": 1455.452013,
+      "speaker": null,
+      "text": "أه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1457.452013,
+      "speaker": null,
+      "text": "آه آه",
+      "normalized": "اه اه"
+    },
+    {
+      "start": 1463.692113,
+      "speaker": null,
+      "text": "هل لست كمان",
+      "normalized": "هل لست كمان"
+    },
+    {
+      "start": 1467.292073,
+      "speaker": null,
+      "text": "آه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1469.292073,
+      "speaker": null,
+      "text": "لا مش عاقبني",
+      "normalized": "لا مش عاقبني"
+    },
+    {
+      "start": 1471.292073,
+      "speaker": null,
+      "text": "كمان",
+      "normalized": "كمان"
+    },
+    {
+      "start": 1481.292073,
+      "speaker": null,
+      "text": "آه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1483.292073,
+      "speaker": null,
+      "text": "آه لا كمان",
+      "normalized": "اه لا كمان"
+    },
+    {
+      "start": 1485.292073,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1491.292073,
+      "speaker": null,
+      "text": "ايوه.",
+      "normalized": "ايوه"
+    },
+    {
+      "start": 1497.292073,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1501.292073,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1507.292073,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1511.292073,
+      "speaker": null,
+      "text": "اشتركوا في القناة",
+      "normalized": "اشتركوا في القناه"
+    },
+    {
+      "start": 1541.292073,
+      "speaker": null,
+      "text": "اه. وبدخله لغاية الاخر يا كوكو. اه. وبدوني عمالة بترزع على",
+      "normalized": "اه وبدخله لغايه الاخر يا كوكو اه وبدوني عماله بترزع علي"
+    },
+    {
+      "start": 1552.752113,
+      "speaker": null,
+      "text": "كسك.",
+      "normalized": "كسك"
+    },
+    {
+      "start": 1557.1321130000001,
+      "speaker": null,
+      "text": "وهو عمال ينزل عليهم شهوده.",
+      "normalized": "وهو عمال ينزل عليهم شهوده"
+    },
+    {
+      "start": 1563.792073,
+      "speaker": null,
+      "text": "وبيعمل صوت عالي.",
+      "normalized": "وبيعمل صوت عالي"
+    },
+    {
+      "start": 1591.370413,
+      "speaker": null,
+      "text": "اه حمد. ايوة حمد. ايوة.",
+      "normalized": "اه حمد ايوه حمد ايوه"
+    },
+    {
+      "start": 1601.650463,
+      "speaker": null,
+      "text": "ايوه عايز احس بك اكتر.",
+      "normalized": "ايوه عايز احس بك اكتر"
+    },
+    {
+      "start": 1605.330463,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1608.130443,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1611.250413,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1613.250413,
+      "speaker": null,
+      "text": "ايوه.",
+      "normalized": "ايوه"
+    },
+    {
+      "start": 1615.250413,
+      "speaker": null,
+      "text": "اه حبيبتي.",
+      "normalized": "اه حبيبتي"
+    },
+    {
+      "start": 1617.250413,
+      "speaker": null,
+      "text": "شو الدور?",
+      "normalized": "شو الدور"
+    },
+    {
+      "start": 1619.250413,
+      "speaker": null,
+      "text": "ايوه.",
+      "normalized": "ايوه"
+    },
+    {
+      "start": 1621.250413,
+      "speaker": null,
+      "text": "طلع شهوتك كلها.",
+      "normalized": "طلع شهوتك كلها"
+    },
+    {
+      "start": 1623.250413,
+      "speaker": null,
+      "text": "طلعاها معي.",
+      "normalized": "طلعاها معي"
+    },
+    {
+      "start": 1627.250413,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1629.250413,
+      "speaker": null,
+      "text": "اه حبيبتي.",
+      "normalized": "اه حبيبتي"
+    },
+    {
+      "start": 1631.250413,
+      "speaker": null,
+      "text": "حبيبتي.",
+      "normalized": "حبيبتي"
+    },
+    {
+      "start": 1639.250413,
+      "speaker": null,
+      "text": "اتحرك عليه يا كوكو.",
+      "normalized": "اتحرك عليه يا كوكو"
+    },
+    {
+      "start": 1642.250413,
+      "speaker": null,
+      "text": "خليه ملكي.",
+      "normalized": "خليه ملكي"
+    },
+    {
+      "start": 1645.250413,
+      "speaker": null,
+      "text": "خدي شهوتك منه.",
+      "normalized": "خدي شهوتك منه"
+    },
+    {
+      "start": 1648.250413,
+      "speaker": null,
+      "text": "ده حقك.",
+      "normalized": "ده حقك"
+    },
+    {
+      "start": 1653.250413,
+      "speaker": null,
+      "text": "خدي حبيبتي.",
+      "normalized": "خدي حبيبتي"
+    },
+    {
+      "start": 1657.250413,
+      "speaker": null,
+      "text": "اه يا روحي.",
+      "normalized": "اه يا روحي"
+    },
+    {
+      "start": 1661.250413,
+      "speaker": null,
+      "text": "حبيبتي عايز اشوفك. خش على. خش على. انا خش على. ماشي?",
+      "normalized": "حبيبتي عايز اشوفك خش علي خش علي انا خش علي ماشي"
+    },
+    {
+      "start": 1676.450453,
+      "speaker": null,
+      "text": "يا حبيب لا. عايز اشوفك زي. لا لا لا. زي الاول. لا. مهلش.",
+      "normalized": "يا حبيب لا عايز اشوفك زي لا لا لا زي الاول لا مهلش"
+    },
+    {
+      "start": 1686.850483,
+      "speaker": null,
+      "text": "انا شوفك كده عادي. شوفك عادي. ايزا اشوف عينك معلش. لأ لأ. عشان هجيب هنجيب هنجيب واحنا بنبص البعض. لأ. هنجيب واحنا بنبص البعض يا بطل. لأ. لسه. هنربط بعض وجانت. لا يا كوكو. كده لأ.",
+      "normalized": "انا شوفك كده عادي شوفك عادي ايزا اشوف عينك معلش لا لا عشان هجيب هنجيب هنجيب واحنا بنبص البعض لا هنجيب واحنا بنبص البعض يا بطل لا لسه هنربط بعض وجانت لا يا كوكو كده لا"
+    },
+    {
+      "start": 1710.790483,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1714.590473,
+      "speaker": null,
+      "text": "احنا قربنا خلاص مش هنتوصل.",
+      "normalized": "احنا قربنا خلاص مش هنتوصل"
+    },
+    {
+      "start": 1723.5304729999998,
+      "speaker": null,
+      "text": "انا ما كنتش شايفك اصلا.",
+      "normalized": "انا ما كنتش شايفك اصلا"
+    },
+    {
+      "start": 1730.930413,
+      "speaker": null,
+      "text": "ماشي طبعا ليه صوتك?",
+      "normalized": "ماشي طبعا ليه صوتك"
+    },
+    {
+      "start": 1735.0104529999999,
+      "speaker": null,
+      "text": "حط.",
+      "normalized": "حط"
+    },
+    {
+      "start": 1745.690443,
+      "speaker": null,
+      "text": "عايزك تعالي صوتك اكتر مني.",
+      "normalized": "عايزك تعالي صوتك اكتر مني"
+    },
+    {
+      "start": 1750.3705129999998,
+      "speaker": null,
+      "text": "انا مش قاعدة لوحدي.",
+      "normalized": "انا مش قاعده لوحدي"
+    },
+    {
+      "start": 1756.290483,
+      "speaker": null,
+      "text": "حطي حطي بوقك في المخدة يروح.",
+      "normalized": "حطي حطي بوقك في المخده يروح"
+    },
+    {
+      "start": 1761.690443,
+      "speaker": null,
+      "text": "حط بوقك حط بوقك في المخدة وحط الميكروفون على المخدة.",
+      "normalized": "حط بوقك حط بوقك في المخده وحط الميكروفون علي المخده"
+    },
+    {
+      "start": 1774.190443,
+      "speaker": null,
+      "text": "ماشي.",
+      "normalized": "ماشي"
+    },
+    {
+      "start": 1782.450453,
+      "speaker": null,
+      "text": "ايوة.",
+      "normalized": "ايوه"
+    },
+    {
+      "start": 1791.690443,
+      "speaker": null,
+      "text": "آه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1796.850483,
+      "speaker": null,
+      "text": "آه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1799.850483,
+      "speaker": null,
+      "text": "آه",
+      "normalized": "اه"
+    },
+    {
+      "start": 1801.265125,
+      "speaker": null,
+      "text": "بتعمل ايه يا جو?",
+      "normalized": "بتعمل ايه يا جو"
+    },
+    {
+      "start": 1804.9451247999998,
+      "speaker": null,
+      "text": "حرك ايدي. فين? اه. احمد. ايدي كل اتنين ولا واحدة?",
+      "normalized": "حرك ايدي فين اه احمد ايدي كل اتنين ولا واحده"
+    },
+    {
+      "start": 1821.4651239999998,
+      "speaker": null,
+      "text": "انا انتي انتي مبسوطة اكتر من",
+      "normalized": "انا انتي انتي مبسوطه اكتر من"
+    },
+    {
+      "start": 1827.665125,
+      "speaker": null,
+      "text": "انا اتنين. انا اتنين. زي بعض?",
+      "normalized": "انا اتنين انا اتنين زي بعض"
+    },
+    {
+      "start": 1841.1051249999998,
+      "speaker": null,
+      "text": "هتلعب في رقابتك برضو?",
+      "normalized": "هتلعب في رقابتك برضو"
+    },
+    {
+      "start": 1845.665123,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 1875.665125,
+      "speaker": null,
+      "text": "اه اه اه ايوة حبيبتي اوعد بطلي اوعد بطلي او تنزلي صوتي اه كمان حبيبتي حبيبتي عفيني يا روحي اه شبعيني شبعيني شطر حبيبتي شطر شبعيني",
+      "normalized": "اه اه اه ايوه حبيبتي اوعد بطلي اوعد بطلي او تنزلي صوتي اه كمان حبيبتي حبيبتي عفيني يا روحي اه شبعيني شبعيني شطر حبيبتي شطر شبعيني"
+    },
+    {
+      "start": 1902.405125,
+      "speaker": null,
+      "text": "حسي أنا ألعبك.",
+      "normalized": "حسي انا العبك"
+    },
+    {
+      "start": 1907.6051249999998,
+      "speaker": null,
+      "text": "ماذا حسي للاطفال؟",
+      "normalized": "ماذا حسي للاطفال"
+    },
+    {
+      "start": 1911.205125,
+      "speaker": null,
+      "text": "شبعيني يا سمك شبعيني شبعيني من كسك شبعيني.",
+      "normalized": "شبعيني يا سمك شبعيني شبعيني من كسك شبعيني"
+    },
+    {
+      "start": 1919.805115,
+      "speaker": null,
+      "text": "ايوه ايوه ايوه حبيبتي ايوه حبيبتي معلش شبعيني شبعيني انا قربت.",
+      "normalized": "ايوه ايوه ايوه حبيبتي ايوه حبيبتي معلش شبعيني شبعيني انا قربت"
+    },
+    {
+      "start": 1929.2051199999999,
+      "speaker": null,
+      "text": "جيبي معي. جيبي شهوتك معي. انا قربت. علي صوتك. اه اه اه اه اه اه ايو.",
+      "normalized": "جيبي معي جيبي شهوتك معي انا قربت علي صوتك اه اه اه اه اه اه ايو"
+    },
+    {
+      "start": 1939.705115,
+      "speaker": null,
+      "text": "ايو ايو. ايو حبيبتي. ايو ايو. نزلي شهوتك. ايو يا شطر. نزلها",
+      "normalized": "ايو ايو ايو حبيبتي ايو ايو نزلي شهوتك ايو يا شطر نزلها"
+    },
+    {
+      "start": 1948.505115,
+      "speaker": null,
+      "text": "معي.",
+      "normalized": "معي"
+    },
+    {
+      "start": 2007.913795,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 2037.913795,
+      "speaker": null,
+      "text": "مرحبا بكم.",
+      "normalized": "مرحبا بكم"
+    },
+    {
+      "start": 2067.913805,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 2077.913805,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 2097.913805,
+      "speaker": null,
+      "text": "دي احسن ولا اللي قبلها?",
+      "normalized": "دي احسن ولا اللي قبلها"
+    },
+    {
+      "start": 2107.313775,
+      "speaker": null,
+      "text": "دي احسن? احسن بقى قد ايه?",
+      "normalized": "دي احسن احسن بقي قد ايه"
+    },
+    {
+      "start": 2120.913805,
+      "speaker": null,
+      "text": "اضعاف?",
+      "normalized": "اضعاف"
+    },
+    {
+      "start": 2127.913805,
+      "speaker": null,
+      "text": "يعني عشر وعشرين ولا الف ولا واحد ونصر.",
+      "normalized": "يعني عشر وعشرين ولا الف ولا واحد ونصر"
+    },
+    {
+      "start": 2136.253775,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 2189.5624549999998,
+      "speaker": null,
+      "text": "اه اشهر عشرين مسلا. ماشي.",
+      "normalized": "اه اشهر عشرين مسلا ماشي"
+    },
+    {
+      "start": 2199.3624449999998,
+      "speaker": null,
+      "text": "الان دي البلال بتاعي الكتير اكتر من الاولاني ولا? زيو. اكتر. اكتر",
+      "normalized": "الان دي البلال بتاعي الكتير اكتر من الاولاني ولا زيو اكتر اكتر"
+    },
+    {
+      "start": 2212.5624549999998,
+      "speaker": null,
+      "text": "كلها حاجات اضارات كده صغيرة ولا يعني كأني كاملتي حمام على نفس",
+      "normalized": "كلها حاجات اضارات كده صغيره ولا يعني كاني كاملتي حمام علي نفس"
+    },
+    {
+      "start": 2217.742455,
+      "speaker": null,
+      "text": "دي.",
+      "normalized": "دي"
+    },
+    {
+      "start": 2222.542465,
+      "speaker": null,
+      "text": "معه في حاجة اسمها بتبقي كأني كاملتي حمام.",
+      "normalized": "معه في حاجه اسمها بتبقي كاني كاملتي حمام"
+    },
+    {
+      "start": 2230.862475,
+      "speaker": null,
+      "text": "لا. ماشي.",
+      "normalized": "لا ماشي"
+    },
+    {
+      "start": 2236.022445,
+      "speaker": null,
+      "text": "طب بتحبيني بقى اكتر اضعاف ولا نص نص ولا واحد في المية اتنين يعني واحد",
+      "normalized": "طب بتحبيني بقي اكتر اضعاف ولا نص نص ولا واحد في الميه اتنين يعني واحد"
+    },
+    {
+      "start": 2247.1224549999997,
+      "speaker": null,
+      "text": "اضعف ولا بتحبيني اكتر ولا قل?",
+      "normalized": "اضعف ولا بتحبيني اكتر ولا قل"
+    },
+    {
+      "start": 2266.022445,
+      "speaker": null,
+      "text": "اكتر. ايوة اكتر كتيب يعني اللي هو اضعاف ولا مرة ونص مرتين.",
+      "normalized": "اكتر ايوه اكتر كتيب يعني اللي هو اضعاف ولا مره ونص مرتين"
+    },
+    {
+      "start": 2277.3624449999998,
+      "speaker": null,
+      "text": "حشر اضعاف ولا الف دعوة.",
+      "normalized": "حشر اضعاف ولا الف دعوه"
+    },
+    {
+      "start": 2296.022445,
+      "speaker": null,
+      "text": "مش عارف. يعني اولي انت حسان.",
+      "normalized": "مش عارف يعني اولي انت حسان"
+    },
+    {
+      "start": 2311.022445,
+      "speaker": null,
+      "text": "حسنا بنقرب ما بيوش علاقة بالحب. يعني انت بنقرب بس ايه? انا",
+      "normalized": "حسنا بنقرب ما بيوش علاقه بالحب يعني انت بنقرب بس ايه انا"
+    },
+    {
+      "start": 2319.9424249999997,
+      "speaker": null,
+      "text": "الحب الضعف. انا بقيت بحبك اضعف دلوقتي.",
+      "normalized": "الحب الضعف انا بقيت بحبك اضعف دلوقتي"
+    },
+    {
+      "start": 2328.182485,
+      "speaker": null,
+      "text": "ده تأثير هرمون معين فانا بقيس وهو طلع ولا لا?",
+      "normalized": "ده تاثير هرمون معين فانا بقيس وهو طلع ولا لا"
+    },
+    {
+      "start": 2353.7111649999997,
+      "speaker": null,
+      "text": "اكتر قوي. انت قصدك قربك ده زي اللي هو العشرة? بالمعنى ده?",
+      "normalized": "اكتر قوي انت قصدك قربك ده زي اللي هو العشره بالمعني ده"
+    },
+    {
+      "start": 2363.791185,
+      "speaker": null,
+      "text": "شوية. ماشي. احساسك دلوقتي عمل ازاي?",
+      "normalized": "شويه ماشي احساسك دلوقتي عمل ازاي"
+    },
+    {
+      "start": 2376.771165,
+      "speaker": null,
+      "text": "اكتر اكيد كتير. يعني حس هل انت مسترخية برضو ولا احساس تاني? احساس",
+      "normalized": "اكتر اكيد كتير يعني حس هل انت مسترخيه برضو ولا احساس تاني احساس"
+    },
+    {
+      "start": 2386.091175,
+      "speaker": null,
+      "text": "احساس ان انتي ناشطة.",
+      "normalized": "احساس ان انتي ناشطه"
+    },
+    {
+      "start": 2400.091175,
+      "speaker": null,
+      "text": "ولا ده ولا ده يعني حاجة في النص. يعني يعني في احساس ان انتي انا ناشطة وعايز اقوم ناشطة كده اعمل حاجة كتير وارقص واغني وكده.",
+      "normalized": "ولا ده ولا ده يعني حاجه في النص يعني يعني في احساس ان انتي انا ناشطه وعايز اقوم ناشطه كده اعمل حاجه كتير وارقص واغني وكده"
+    },
+    {
+      "start": 2415.091175,
+      "speaker": null,
+      "text": "او احسس اللي انا بقى سكينة وانا",
+      "normalized": "او احسس اللي انا بقي سكينه وانا"
+    },
+    {
+      "start": 2420.091175,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 2436.091175,
+      "speaker": null,
+      "text": "لا حسنش مش قومش اقوم واقف نطط وارقصن لا",
+      "normalized": "لا حسنش مش قومش اقوم واقف نطط وارقصن لا"
+    },
+    {
+      "start": 2446.091175,
+      "speaker": null,
+      "text": "ليه",
+      "normalized": "ليه"
+    },
+    {
+      "start": 2450.091175,
+      "speaker": null,
+      "text": "خلاص هيدوء.",
+      "normalized": "خلاص هيدوء"
+    },
+    {
+      "start": 2455.751125,
+      "speaker": null,
+      "text": "ماشي. تعالي يلا انا اه اريد اشوفك قبل ما اراه.",
+      "normalized": "ماشي تعالي يلا انا اه اريد اشوفك قبل ما اراه"
+    },
+    {
+      "start": 2468.091175,
+      "speaker": null,
+      "text": "يا حبيبي انا شفت البلدقة. يا ماما انا هشوفك كده زي ما انت",
+      "normalized": "يا حبيبي انا شفت البلدقه يا ماما انا هشوفك كده زي ما انت"
+    },
+    {
+      "start": 2474.851185,
+      "speaker": null,
+      "text": "وخلاص واحنا نتكلم كده.",
+      "normalized": "وخلاص واحنا نتكلم كده"
+    },
+    {
+      "start": 2480.091175,
+      "speaker": null,
+      "text": "مهمة فاهمين طول ما انا اقفل الباب يبقى انا بكلمك فمش معقول طول النهار. ماشي ما انت يا سيدي",
+      "normalized": "مهمه فاهمين طول ما انا اقفل الباب يبقي انا بكلمك فمش معقول طول النهار ماشي ما انت يا سيدي"
+    },
+    {
+      "start": 2488.9711749999997,
+      "speaker": null,
+      "text": "فتحة الباب اهو. ما ماشي ما لو حد دخل بقى يلاقيني برضو بكلمك.",
+      "normalized": "فتحه الباب اهو ما ماشي ما لو حد دخل بقي يلاقيني برضو بكلمك"
+    },
+    {
+      "start": 2495.091175,
+      "speaker": null,
+      "text": "فبقى انت بتعمل طول النهار ايه? انا يا ماما هفضل كم قد ايه? انا",
+      "normalized": "فبقي انت بتعمل طول النهار ايه انا يا ماما هفضل كم قد ايه انا"
+    },
+    {
+      "start": 2501.511155,
+      "speaker": null,
+      "text": "شوية وهمشي.",
+      "normalized": "شويه وهمشي"
+    },
+    {
+      "start": 2504.851185,
+      "speaker": null,
+      "text": "يعني مش هنتكمل عشر دقيق.",
+      "normalized": "يعني مش هنتكمل عشر دقيق"
+    },
+    {
+      "start": 2511.851185,
+      "speaker": null,
+      "text": "خشي كده على البطان.",
+      "normalized": "خشي كده علي البطان"
+    },
+    {
+      "start": 2519.851185,
+      "speaker": null,
+      "text": "اهو. دخلت اهو.",
+      "normalized": "اهو دخلت اهو"
+    }
+  ]
+}
