@@ -25,6 +25,7 @@ from pathlib import Path
 
 import boto3
 
+import transcribe as TR
 from transcribe import PROVIDERS, fmt_ts, load_env, log, transcribe_file
 from s3_pipeline import AUDIO_EXTS, list_keys, safe_name
 
@@ -126,6 +127,12 @@ def main() -> None:
     ap.add_argument("--speakers", type=int, default=2)
     ap.add_argument("--list", action="store_true", help="اعرض المتصلين واخرج")
     ap.add_argument("--preview", type=int, default=14, help="أسطر المعاينة")
+    ap.add_argument("--all", action="store_true",
+                    help="امشِ على كل المتصلين، من الأصغر للأكبر")
+    ap.add_argument("--max-files", type=int, default=0,
+                    help="حد أقصى لعدد الملفات في هذه الجلسة (0 = بلا حد)")
+    ap.add_argument("--gemini-cap", type=int, default=220,
+                    help="سقف طلبات Gemini في هذه الجلسة (الحد المجاني 250/يوم)")
     args = ap.parse_args()
 
     s3 = boto3.client("s3", region_name=REGION)
@@ -134,7 +141,7 @@ def main() -> None:
         print(f"لا ملفات صوت تحت s3://{BUCKET}/inbox/")
         return
 
-    if args.list or not args.caller:
+    if args.list or (not args.caller and not args.all):
         print(f"المتصلون في s3://{BUCKET}/inbox/\n")
         print(f"{'المتصل':<34} {'ملفات':>6} {'الأصغر':>10}")
         print("-" * 54)
@@ -145,62 +152,119 @@ def main() -> None:
         print(f'  python pilot.py --caller "{smallest}"')
         return
 
-    if args.caller not in inv:
+    if args.caller and args.caller not in inv:
         print(f"لا يوجد متصل بهذا الاسم. المتاح: {sorted(inv)}")
         sys.exit(1)
 
     provider = pick_provider(args.provider)
-    objs = inv[args.caller][:max(1, args.limit)]
-    out_dir = Path("journal") / safe_name(args.caller, args.caller)
-    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # عدّاد طلبات حقيقي: يُحسب كل نداء لمزوّد، لا كل ملف. تسجيل واحد يُقطَّع
+    # إلى عدة مقاطع فيُرسل طلبًا لكل مقطع، والتقاطع يضاعفها.
+    counter = {"gemini": 0, "groq": 0}
+
+    class CapReached(Exception):
+        pass
+
+    def hook(prov: str) -> None:
+        counter[prov] = counter.get(prov, 0) + 1
+        if prov == "gemini" and counter["gemini"] > args.gemini_cap:
+            raise SystemExit(
+                f"بلغت سقف هذه الجلسة لـ Gemini ({args.gemini_cap} طلب)."
+                " الباقي يُستأنف في تشغيل لاحق.")
+
+    TR.REQUEST_HOOK = hook
+
+    callers = ([args.caller] if args.caller
+               else sorted(inv, key=lambda c: sum(o['Size'] for o in inv[c])))
     scratch = Path(os.environ.get("KIROCREW_SCRATCH", ".")) / "pilot"
     scratch.mkdir(parents=True, exist_ok=True)
 
-    log(f"\nالمتصل: {args.caller}  |  المحرك: {provider}"
-        f"  |  ملفات: {len(objs)}\n")
+    done: list = []
+    skipped = failed = 0
+    stop = False
 
-    done = []
-    for i, o in enumerate(objs, 1):
-        key = o["Key"]
-        stem = safe_name(Path(key).stem, f"rec{i}")
-        local = scratch / f"{stem}{Path(key).suffix.lower()}"
-        log(f"{'='*62}\n[{i}/{len(objs)}] {Path(key).name}"
-            f"  ({o['Size']/1e6:.1f} MB)\n{'='*62}")
-        try:
-            s3.download_file(BUCKET, key, str(local))
-            meta = transcribe_file(local, out_dir, provider, args.speakers,
-                                   "", title=f"{args.caller} — {stem}")
-            done.append((stem, meta))
-        except SystemExit as exc:
-            log(f"  فشل: {str(exc)[:400]}")
-        except Exception as exc:
-            log(f"  فشل: {type(exc).__name__}: {str(exc)[:300]}")
-        finally:
-            local.unlink(missing_ok=True)
+    for caller in callers:
+        if stop:
+            break
+        out_dir = Path("journal") / safe_name(caller, caller)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        objs = inv[caller] if args.all else inv[caller][:max(1, args.limit)]
+        log(f"\n{'#'*62}\n# {caller}  ({len(objs)} ملف)  |  المحرك: {provider}\n{'#'*62}")
 
-    if not done:
+        for i, o in enumerate(objs, 1):
+            if args.max_files and len(done) >= args.max_files:
+                log(f"\nبلغت حد الملفات لهذه الجلسة ({args.max_files}).")
+                stop = True
+                break
+
+            key = o["Key"]
+            stem = safe_name(Path(key).stem, f"rec{i}")
+            # الاستئناف: ما فُرّغ سابقًا لا يُعاد -- فالتشغيل المتكرر آمن ومجاني
+            if (out_dir / f"{stem}.json").exists():
+                skipped += 1
+                continue
+
+            local = scratch / f"{stem}{Path(key).suffix.lower()}"
+            log(f"\n{'='*62}\n[{i}/{len(objs)}] {Path(key).name}"
+                f"  ({o['Size']/1e6:.1f} MB)"
+                f"  [طلبات gemini حتى الآن: {counter['gemini']}]\n{'='*62}")
+            try:
+                s3.download_file(BUCKET, key, str(local))
+                meta = transcribe_file(local, out_dir, provider, args.speakers,
+                                       "", title=f"{caller} — {stem}")
+                done.append((caller, stem, meta))
+            except SystemExit as exc:
+                msg = str(exc)
+                if "سقف هذه الجلسة" in msg:
+                    log(f"  {msg}")
+                    stop = True
+                    break
+                failed += 1
+                log(f"  فشل: {msg[:300]}")
+            except Exception as exc:
+                failed += 1
+                log(f"  فشل: {type(exc).__name__}: {str(exc)[:300]}")
+            finally:
+                local.unlink(missing_ok=True)
+
+    TR.REQUEST_HOOK = None
+
+    # الملخصات لكل متصل تأثّر
+    touched = sorted({c for c, _, _ in done})
+    summaries = []
+    for c in touched:
+        p = build_summary(c, Path("journal") / safe_name(c, c))
+        if p:
+            summaries.append(p)
+
+    log(f"\n{'='*62}\nالنتيجة\n{'='*62}")
+    log(f"  نجح: {len(done)}   تُخطّي (مفرَّغ سابقًا): {skipped}   فشل: {failed}")
+    log(f"  طلبات: gemini={counter['gemini']}  groq={counter['groq']}")
+    if done:
+        words = sum(m["words"] for _, _, m in done)
+        secs = sum(m["duration"] for _, _, m in done)
+        log(f"  المفرَّغ: {words:,} كلمة من {secs/3600:.2f} ساعة صوت")
+    for p in summaries:
+        log(f"  ملخص: {p}")
+    if stop:
+        log("\n  توقّف عند حد -- أعد التشغيل بنفس الأمر ليستأنف من حيث انتهى.")
+
+    if not done and not skipped:
         log("\nلم ينجح أي ملف. راجع الخطأ أعلاه.")
         sys.exit(1)
 
-    summary = build_summary(args.caller, out_dir)
-
-    log(f"\n{'='*62}\nالنتيجة\n{'='*62}")
-    for stem, meta in done:
-        log(f"  {stem}: {meta['words']} كلمة، {meta['lines']} سطر،"
-            f" {fmt_ts(meta['duration'])}، محرك {meta['provider']}")
-    log(f"\n  المخرجات: {out_dir.resolve()}")
-    if summary:
-        log(f"  الملخص المجمّع: {summary.resolve()}")
-
-    md = sorted(out_dir.glob("*.md"))
-    if md and args.preview > 0:
-        log(f"\n{'='*62}\nمعاينة — احكم بنفسك على الدقة\n{'='*62}")
-        for line in md[0].read_text(encoding="utf-8").splitlines():
-            if line.startswith("`["):
-                log("  " + line)
-                args.preview -= 1
-                if args.preview <= 0:
-                    break
+    if args.caller and not args.all and args.preview > 0:
+        out_dir = Path("journal") / safe_name(args.caller, args.caller)
+        md = sorted(out_dir.glob("*.md"))
+        if md:
+            log(f"\n{'='*62}\nمعاينة\n{'='*62}")
+            left = args.preview
+            for line in md[0].read_text(encoding="utf-8").splitlines():
+                if line.startswith("`["):
+                    log("  " + line)
+                    left -= 1
+                    if left <= 0:
+                        break
 
 
 if __name__ == "__main__":

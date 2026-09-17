@@ -63,15 +63,23 @@ def die(msg: str) -> "None":
 # ---------------------------------------------------------------- المفاتيح
 
 def load_env() -> None:
-    """يقرأ .env بجانب السكربت بدون أي تبعية خارجية."""
+    """
+    يقرأ .env بجانب السكربت بدون أي تبعية خارجية.
+
+    يتحمّل BOM عن قصد: محرّرات ويندوز و`Set-Content -Encoding utf8` في
+    PowerShell 5.1 تكتب UTF-8 **مع BOM**، فيصير اسم أول متغيّر
+    `\\ufeffGEMINI_API_KEY` بدل `GEMINI_API_KEY` -- ويظهر العطب كأن المفتاح
+    غير موجود بينما هو مكتوب في الملف. وقع هذا فعلًا، ومرتين.
+    """
     if not ENV_FILE.exists():
         return
-    for raw in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
+    text = ENV_FILE.read_text(encoding="utf-8-sig")      # -sig يُسقط BOM
+    for raw in text.splitlines():
+        line = raw.strip().lstrip("\ufeff")               # حزام أمان إضافي
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, val = line.partition("=")
-        key = key.strip()
+        key = key.strip().lstrip("\ufeff")
         val = val.strip().strip('"').strip("'")
         # متغيرات البيئة الحقيقية لها الأولوية على الملف
         if key and key not in os.environ:
