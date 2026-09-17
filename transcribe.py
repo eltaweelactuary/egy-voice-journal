@@ -726,11 +726,22 @@ def write_outputs(lines: list[Line], meta: dict, out_dir: Path, stem: str) -> di
     written["srt"] = srt
 
     # --- بيانات منظمة للبحث والتحليل لاحقًا
+    #
+    # كل سطر يحمل النص الخام كما نُطق، **و** صورة مطبّعة بجانبه.
+    # الخام للعرض ولا يُمسّ (عاميّة المالك هي المُنتَج). المطبّع للبحث
+    # والمطابقة: بدونه «إزاي» لا تجد «ازاي» ويفشل البحث بصمت.
+    try:
+        from arabic import normalize as _norm
+    except ImportError:
+        def _norm(t: str) -> str:               # لا تُسقط التفريغ لغياب وحدة
+            return t
+
     js = out_dir / f"{stem}.json"
     js.write_text(
         json.dumps(
             {"meta": meta,
-             "lines": [{"start": l.start, "speaker": l.speaker, "text": l.text}
+             "lines": [{"start": l.start, "speaker": l.speaker,
+                        "text": l.text, "normalized": _norm(l.text)}
                        for l in lines]},
             ensure_ascii=False, indent=2,
         ),

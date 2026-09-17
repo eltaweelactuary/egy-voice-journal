@@ -1,0 +1,425 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  خط أنابيب تفريغ الصوت بالعامية المصرية -- أوتوماتيكي من الرفع للمخرجات.
+  التصميم يفرض التتابع (عامل واحد في أي لحظة) لأن التوازي يفجّر حدود الطبقة
+  المجانية لمزوّدي التفريغ. والخمول يكلّف صفرًا: Lambda تفحص عمق الطابور
+  أولًا ولا تشغّل Fargate إلا حين يوجد عمل فعلي.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: ""
+    Description: اتركه فاضيًا ليُشتقّ اسم فريد من رقم الحساب
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: شبكات فرعية عامة (subnets) لتشغيل Fargate -- تكفي شبكات VPC الافتراضية
+
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: مجموعة أمان تسمح بالخروج (outbound) للوصول لواجهات المزوّدين
+
+  ImageUri:
+    Type: String
+    Description: عنوان صورة العامل في ECR، مثل 123.dkr.ecr.us-east-1.amazonaws.com/journal-worker:latest
+
+  NotifyEmail:
+    Type: String
+    Default: ""
+    Description: بريد لتنبيهات الفشل والميزانية (اتركه فاضيًا لتعطيلها)
+
+  ProviderOrder:
+    Type: String
+    Default: "gemini,groq"
+    Description: ترتيب محركات التفريغ
+
+  FallbackPolicy:
+    Type: String
+    Default: degrade
+    AllowedValues: [degrade, requeue]
+    Description: >
+      degrade = اسقط لمحرك أقل دقة فورًا (يُنجز دائمًا).
+      requeue = لا تسقط؛ أعد المحاولة لاحقًا بالمحرك الأدق.
+
+  RawAudioTtlDays:
+    Type: Number
+    Default: 30
+    Description: مدة بقاء الصوت الخام في processed/ قبل حذفه تلقائيًا
+
+  MonthlyBudgetUsd:
+    Type: Number
+    Default: 5
+    Description: سقف تنبيه الميزانية -- شبكة أمان ضد أي خطأ يشغّل موارد بلا توقف
+
+Conditions:
+  HasEmail: !Not [!Equals [!Ref NotifyEmail, ""]]
+  DeriveBucketName: !Equals [!Ref BucketName, ""]
+
+Resources:
+
+  # ----------------------------------------------------------- التخزين
+
+  Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain          # لا نحذف تسجيلات المالك مع الستاك أبدًا
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !If
+        - DeriveBucketName
+        - !Sub "egy-voice-journal-${AWS::AccountId}"
+        - !Ref BucketName
+      # تسجيلات شخصية -- حجب أي وصول عام، بلا استثناء
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
+      NotificationConfiguration:
+        EventBridgeConfiguration:
+          EventBridgeEnabled: true
+      LifecycleConfiguration:
+        Rules:
+          # الصوت الخام يُحذف، والتفريغ والملخصات تبقى للأبد
+          - Id: expire-raw-audio
+            Status: Enabled
+            Prefix: processed/
+            ExpirationInDays: !Ref RawAudioTtlDays
+          - Id: expire-quota-state
+            Status: Enabled
+            Prefix: state/
+            ExpirationInDays: 90
+          - Id: abort-incomplete-uploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+
+  # ----------------------------------------------------------- الطابور
+
+  DeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${AWS::StackName}-ingest-dlq"
+      MessageRetentionPeriod: 1209600      # ١٤ يومًا
+
+  IngestQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub "${AWS::StackName}-ingest"
+      # أطول من أقصى زمن معالجة متوقع، وإلا سُلّمت الرسالة مرتين وعُولجت مرتين
+      VisibilityTimeout: 3600
+      MessageRetentionPeriod: 1209600
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DeadLetterQueue.Arn
+        maxReceiveCount: 3
+
+  IngestQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref IngestQueue]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowEventBridge
+            Effect: Allow
+            Principal: {Service: events.amazonaws.com}
+            Action: sqs:SendMessage
+            Resource: !GetAtt IngestQueue.Arn
+            Condition:
+              ArnEquals: {"aws:SourceArn": !GetAtt UploadRule.Arn}
+
+  # ----------------------------------------------------------- الأحداث
+
+  UploadRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-on-upload"
+      Description: أي ملف يهبط في inbox/ يدخل الطابور ويستدعي المُشغِّل
+      EventPattern:
+        source: ["aws.s3"]
+        detail-type: ["Object Created"]
+        detail:
+          bucket:
+            name: [!Ref Bucket]
+          object:
+            key: [{prefix: "inbox/"}]
+      Targets:
+        - Id: queue
+          Arn: !GetAtt IngestQueue.Arn
+        - Id: trigger
+          Arn: !GetAtt TriggerFunction.Arn
+
+  # شبكة أمان: تلتقط أي حدث ضائع وتعيد ما تعطّل. لا تكلّف شيئًا لأن
+  # Lambda تفحص عمق الطابور أولًا ولا تشغّل Fargate على طابور فارغ.
+  SafetyNetRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Sub "${AWS::StackName}-safety-net"
+      ScheduleExpression: "rate(1 hour)"
+      Targets:
+        - Id: trigger
+          Arn: !GetAtt TriggerFunction.Arn
+
+  TriggerPermissionUpload:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref TriggerFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt UploadRule.Arn
+
+  TriggerPermissionSchedule:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref TriggerFunction
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt SafetyNetRule.Arn
+
+  # ----------------------------------------------------------- الحوسبة
+
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "${AWS::StackName}-cluster"
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ecs/${AWS::StackName}-worker"
+      RetentionInDays: 30
+
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  # أقل صلاحية: هذه الحاوية وهذا الطابور وهذه الأسرار فقط -- لا أكثر
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: journal-worker
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject, s3:DeleteObject]
+                Resource: !Sub "${Bucket.Arn}/*"
+              - Effect: Allow
+                Action: [s3:ListBucket]
+                Resource: !GetAtt Bucket.Arn
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:ChangeMessageVisibility
+                  - sqs:GetQueueAttributes
+                Resource: !GetAtt IngestQueue.Arn
+              - Effect: Allow
+                Action: [ssm:GetParameters, ssm:GetParameter]
+                Resource: !Sub "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/journal/*"
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${AWS::StackName}-worker"
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: "1024"          # 1 vCPU -- يكفي لـ ffmpeg + طلبات الواجهات
+      Memory: "4096"
+      ExecutionRoleArn: !GetAtt TaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ContainerDefinitions:
+        - Name: worker
+          Image: !Ref ImageUri
+          Essential: true
+          Environment:
+            - {Name: BUCKET, Value: !Ref Bucket}
+            - {Name: QUEUE_URL, Value: !Ref IngestQueue}
+            - {Name: PROVIDER_ORDER, Value: !Ref ProviderOrder}
+            - {Name: FALLBACK_POLICY, Value: !Ref FallbackPolicy}
+            - {Name: SSM_PREFIX, Value: "/journal/"}
+            - {Name: MAX_RUNTIME_SEC, Value: "3000"}
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref LogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: worker
+
+  # ----------------------------------------------------------- المُشغِّل
+
+  TriggerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: journal-trigger
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [ecs:RunTask, ecs:ListTasks]
+                Resource: "*"
+                Condition:
+                  ArnEquals: {"ecs:cluster": !GetAtt Cluster.Arn}
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource:
+                  - !GetAtt TaskRole.Arn
+                  - !GetAtt TaskExecutionRole.Arn
+              - Effect: Allow
+                Action: sqs:GetQueueAttributes
+                Resource: !GetAtt IngestQueue.Arn
+
+  TriggerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-trigger"
+      Runtime: python3.12
+      Handler: index.handler
+      Role: !GetAtt TriggerRole.Arn
+      Timeout: 30
+      Environment:
+        Variables:
+          CLUSTER: !Ref Cluster
+          TASK_DEF: !Ref TaskDefinition
+          TASK_FAMILY: !Sub "${AWS::StackName}-worker"
+          QUEUE_URL: !Ref IngestQueue
+          SUBNETS: !Join [",", !Ref Subnets]
+          SECURITY_GROUPS: !Ref SecurityGroupId
+      Code:
+        ZipFile: |
+          # نسخة مضمّنة مبسّطة. المصدر الكامل والموثّق في aws/trigger_lambda.py --
+          # حدّثه هناك ثم انسخه هنا، أو انشره كحزمة منفصلة.
+          import json, os, boto3
+          ecs = boto3.client("ecs"); sqs = boto3.client("sqs")
+          CLUSTER=os.environ["CLUSTER"]; TASK_DEF=os.environ["TASK_DEF"]
+          FAMILY=os.environ.get("TASK_FAMILY",""); QUEUE=os.environ["QUEUE_URL"]
+          SUBNETS=[s for s in os.environ.get("SUBNETS","").split(",") if s]
+          SGS=[g for g in os.environ.get("SECURITY_GROUPS","").split(",") if g]
+
+          def handler(event, context):
+              a = sqs.get_queue_attributes(QueueUrl=QUEUE, AttributeNames=[
+                  "ApproximateNumberOfMessages",
+                  "ApproximateNumberOfMessagesNotVisible"])["Attributes"]
+              depth = int(a.get("ApproximateNumberOfMessages",0)) + \
+                      int(a.get("ApproximateNumberOfMessagesNotVisible",0))
+              if depth == 0:
+                  return _out("skipped", "empty queue - no cost", depth)
+              running = 0
+              for d in ("RUNNING","PENDING"):
+                  kw = {"cluster":CLUSTER,"desiredStatus":d}
+                  if FAMILY: kw["family"]=FAMILY
+                  running += len(ecs.list_tasks(**kw).get("taskArns",[]))
+              if running:
+                  return _out("skipped", f"worker already running ({running})", depth)
+              r = ecs.run_task(cluster=CLUSTER, taskDefinition=TASK_DEF, count=1,
+                  launchType="FARGATE", networkConfiguration={"awsvpcConfiguration":{
+                      "subnets":SUBNETS,"securityGroups":SGS,"assignPublicIp":"ENABLED"}})
+              if r.get("failures"):
+                  return _out("failed", json.dumps(r["failures"], default=str)[:400], depth)
+              return _out("launched", r["tasks"][0]["taskArn"].rsplit("/",1)[-1], depth)
+
+          def _out(status, detail, depth):
+              o = {"status":status,"detail":detail,"queue_depth":depth}
+              print(json.dumps(o, ensure_ascii=False)); return o
+
+  # ----------------------------------------------------------- المراقبة
+
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Condition: HasEmail
+    Properties:
+      TopicName: !Sub "${AWS::StackName}-alerts"
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref NotifyEmail
+
+  DlqAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Condition: HasEmail
+    Properties:
+      AlarmName: !Sub "${AWS::StackName}-dlq-not-empty"
+      AlarmDescription: تسجيل فشل ٣ مرات ووصل للـ DLQ -- يحتاج نظرة
+      Namespace: AWS/SQS
+      MetricName: ApproximateNumberOfMessagesVisible
+      Dimensions:
+        - Name: QueueName
+          Value: !GetAtt DeadLetterQueue.QueueName
+      Statistic: Maximum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 0
+      ComparisonOperator: GreaterThanThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  Budget:
+    Type: AWS::Budgets::Budget
+    Condition: HasEmail
+    Properties:
+      Budget:
+        BudgetName: !Sub "${AWS::StackName}-monthly"
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref NotifyEmail
+
+Outputs:
+  BucketName:
+    Description: ارفع تسجيلاتك إلى inbox/<اسم المتصل>/ داخل هذه الحاوية
+    Value: !Ref Bucket
+
+  UploadCommand:
+    Description: أمر رفع دفعة من جهازك
+    Value: !Sub "aws s3 sync <مجلدك> s3://${Bucket}/inbox/<اسم-المتصل>/ --exclude '*' --include '*.m4a' --include '*.mp3'"
+
+  IndexUrl:
+    Description: الفهرس الذي تقرأه أي عملية لاحقة
+    Value: !Sub "s3://${Bucket}/index.json"
+
+  QueueUrl:
+    Value: !Ref IngestQueue
+
+  DlqUrl:
+    Value: !Ref DeadLetterQueue
+
+  LogsCommand:
+    Description: متابعة سجلات العامل مباشرة
+    Value: !Sub "aws logs tail ${LogGroup} --follow"
