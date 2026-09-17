@@ -656,8 +656,188 @@ def transcribe_qwencleo(path: Path, speakers: int, tail: str, hints: str) -> lis
     return lines
 
 
+def _draft_block(drafts: dict[str, list[Line]]) -> str:
+    """يرتّب مسودات المحركات نصًا مرقّمًا ليقرأها المُصالِح."""
+    out = []
+    for i, (name, lines) in enumerate(drafts.items(), 1):
+        body = "\n".join(
+            f"[{fmt_ts(l.start)}] {(l.speaker + ': ') if l.speaker else ''}{l.text}"
+            for l in lines
+        )
+        out.append(f"### مسودة {i} (محرك: {name})\n{body}")
+    return "\n\n".join(out)
+
+
+def _agreement(drafts: dict[str, list[Line]]) -> float:
+    """
+    نسبة اتفاق تقديرية بين أول مسودتين، على نص مطبّع.
+
+    تُقاس على النص المطبّع لا الخام، وإلا حُسِب اختلاف رسم («ازاي» مقابل
+    «إزّاي») خلافًا حقيقيًا فانهار الرقم بلا سبب.
+    """
+    if len(drafts) < 2:
+        return 0.0
+    try:
+        from arabic import wer
+    except ImportError:
+        return 0.0
+    a, b = list(drafts.values())[:2]
+    ta = " ".join(l.text for l in a)
+    tb = " ".join(l.text for l in b)
+    if not ta.strip() or not tb.strip():
+        return 0.0
+    return max(0.0, 1.0 - wer(ta, tb)["wer"])
+
+
+def _reconcile(path: Path, drafts: dict[str, list[Line]], speakers: int,
+               hints: str) -> list[Line]:
+    """
+    يعطي مُصالِحًا الصوتَ **مع** كل المسودات، ويطلب نصًا واحدًا نهائيًا.
+
+    هذا ما يقتل الهلوسة: كلمة اختلقها محرك واحد لا تجد ما يعضدها في المسودات
+    الأخرى ولا في الصوت، فتُحذف أو تُعلَّم. مخرَج حقيقي من Groq بدأ بـ
+    «مرحباً. مرحباً. يا عبد البر» ولم يكن في الصوت شيء من ذلك -- التقاطع
+    يسقطه بدل أن يُسلّمه للمالك.
+    """
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        die("المصالحة تحتاج GEMINI_API_KEY. أو اضبط CONSENSUS_RECONCILER=none"
+            " لتأخذ أفضل مسودة بلا مصالحة.")
+
+    prompt = "\n".join([
+        "أمامك تسجيل صوتي بالعامية المصرية، ومعه عدة مسودات تفريغ أنتجتها",
+        "محركات مستقلة. مهمتك إنتاج **نص واحد نهائي** أدقّ منها كلها.",
+        "",
+        "اسمع الصوت بنفسك، ثم:",
+        "- ما اتفقت عليه المسودات: أثبته كما هو.",
+        "- ما اختلفت فيه: احكم بالصوت واختر ما سمعته فعلًا.",
+        "- ما لم تسمعه بوضوح ولم تتفق عليه المسودات: اكتب [غير واضح].",
+        "- كلمة موجودة في مسودة واحدة فقط ولا تسمعها في الصوت: **احذفها**."
+        " المحركات تهلوس، خصوصًا في أول التسجيل وعند الضجيج.",
+        "- لا تخترع كلامًا ليس في الصوت ولا في أي مسودة.",
+        "",
+        "قواعد اللغة إلزامية:",
+        "- العامية المصرية كما نُطقت حرفيًا. لا تفصيح، لا تصحيح نحوي،",
+        "  لا إعادة صياغة، لا تلخيص.",
+        "- إحدى المسودات قد تكون «فصّحت» الكلام -- لا تتبعها في ذلك،",
+        "  أعِد الكلام لعاميّته كما تسمعه.",
+        "- الأرقام بالحروف كما نُطقت.",
+        "",
+        "صيغة المخرج -- سطر لكل جملة، ولا شيء غيرها:",
+    ])
+    if speakers and speakers > 1:
+        prompt += ("\n[mm:ss] متحدث ١: النص\n[mm:ss] متحدث ٢: النص"
+                   f"\n\nالتسجيل مكالمة فيها {speakers} متحدثين تقريبًا.")
+    else:
+        prompt += "\n[mm:ss] النص"
+    if hints.strip():
+        prompt += ("\n\nأسماء ومصطلحات تُكتب بهذا الرسم بالضبط:\n" + hints.strip())
+    prompt += "\n\n## المسودات\n\n" + _draft_block(drafts)
+
+    model = os.environ.get("CONSENSUS_MODEL", "").strip()
+    models = [model] if model else _gemini_model_cascade()
+    audio_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+    payload = {
+        "contents": [{"parts": [
+            {"text": prompt},
+            {"inline_data": {"mime_type": "audio/ogg", "data": audio_b64}},
+        ]}],
+        "generationConfig": {"temperature": 0.0, "maxOutputTokens": 65536,
+                             "thinkingConfig": {"thinkingBudget": 0}},
+    }
+    headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
+
+    for m in models:
+        try:
+            data = _post_json(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent",
+                payload, headers, max_retries=2)
+        except SystemExit as exc:
+            if "api key" in str(exc).lower():
+                raise
+            log(f"    المُصالِح '{m}' فشل -- التالي...")
+            continue
+        try:
+            parts = data["candidates"][0]["content"]["parts"]
+            text = "".join(p.get("text", "") for p in parts)
+        except (KeyError, IndexError):
+            continue
+        merged = parse_timestamped(text)
+        if merged:
+            return merged
+    return []
+
+
+def transcribe_consensus(path: Path, speakers: int, tail: str,
+                         hints: str) -> list[Line]:
+    """
+    تقاطع محركات: عدة موديلات تفرّغ نفس المقطع، ثم تتصالح على نص واحد.
+
+    لماذا هذا أدق من أي محرك منفردًا: الأخطاء المستقلة لا تتكرر بنفس الشكل.
+    ما يتفق عليه محركان مختلفان يكاد يكون صحيحًا، وما ينفرد به أحدهما مرشّح
+    قوي لأن يكون هلوسة. فالاتفاق دليل، والاختلاف موضع فحص بالصوت.
+
+    الضبط:
+        CONSENSUS_ENGINES     افتراضي "gemini,groq"
+        CONSENSUS_RECONCILER  "llm" (افتراضي) أو "none" لأخذ أفضل مسودة
+        CONSENSUS_MODEL       موديل المصالحة، افتراضي سلسلة Gemini
+    """
+    names = [e.strip() for e in
+             os.environ.get("CONSENSUS_ENGINES", "gemini,groq").split(",")
+             if e.strip()]
+    names = [n for n in names if n != "consensus"]      # لا استدعاء ذاتي
+    unknown = [n for n in names if n not in PROVIDERS]
+    if unknown:
+        die(f"محركات غير معروفة في CONSENSUS_ENGINES: {unknown}")
+    if len(names) < 2:
+        die("التقاطع يحتاج محركين على الأقل في CONSENSUS_ENGINES.")
+
+    drafts: dict[str, list[Line]] = {}
+    for name in names:
+        log(f"    تقاطع: تشغيل '{name}'...")
+        try:
+            lines = PROVIDERS[name](path, speakers, tail, hints)
+        except SystemExit as exc:
+            log(f"      '{name}' فشل: {str(exc)[:160]} -- نكمل بالباقي")
+            continue
+        except Exception as exc:
+            log(f"      '{name}' فشل: {type(exc).__name__} -- نكمل بالباقي")
+            continue
+        if lines:
+            drafts[name] = lines
+            log(f"      '{name}': {sum(len(l.text.split()) for l in lines)} كلمة")
+
+    if not drafts:
+        die("كل محركات التقاطع فشلت.")
+    if len(drafts) == 1:
+        only = next(iter(drafts))
+        log(f"    نجح محرك واحد فقط ('{only}') -- لا تقاطع، أرجعه كما هو")
+        return drafts[only]
+
+    agree = _agreement(drafts)
+    log(f"    اتفاق المسودتين الأوليين: {agree:.0%}"
+        + ("  (اتفاق منخفض -- الصوت صعب أو أحد المحركين يهلوس)"
+           if agree < 0.6 else ""))
+
+    if os.environ.get("CONSENSUS_RECONCILER", "llm").strip().lower() == "none":
+        best = max(drafts.items(), key=lambda kv: sum(len(l.text.split())
+                                                      for l in kv[1]))
+        log(f"    بلا مصالحة -- أخذت أطول مسودة ('{best[0]}')")
+        return best[1]
+
+    merged = _reconcile(path, drafts, speakers, hints)
+    if not merged:
+        best = max(drafts.items(), key=lambda kv: sum(len(l.text.split())
+                                                      for l in kv[1]))
+        log(f"    المصالحة فشلت -- رجعت لأطول مسودة ('{best[0]}')")
+        return best[1]
+    log(f"    مصالحة: {sum(len(l.text.split()) for l in merged)} كلمة نهائية")
+    return merged
+
+
 PROVIDERS = {
-    "qwencleo": transcribe_qwencleo,     # الأدق للمصري بين المفتوحات -- مجاني
+    "consensus": transcribe_consensus,    # تقاطع محركات -- الأدق، وأغلى في الطلبات
+    "qwencleo": transcribe_qwencleo,      # الأدق للمصري بين المفتوحات -- مجاني
     "gemini": transcribe_gemini,
     "groq": transcribe_groq,
     "elevenlabs": transcribe_elevenlabs,  # الأدق المقاس مستقلًا -- مدفوع
