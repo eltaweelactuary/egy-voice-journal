@@ -146,14 +146,32 @@ def ensure_bucket(s3, session, bucket: str, region: str) -> None:
     log("  حجب الوصول العام: مُفعَّل")
 
     # 2) تشفير افتراضي
+    #
+    # لا نضع BucketKeyEnabled مع AES256: مفاتيح الحاوية (S3 Bucket Keys) خاصية
+    # من خصائص SSE-KMS لتقليل نداءات KMS، ولا معنى لها مع SSE-S3 -- وقد نبّه
+    # مراجع مستقل إلى أن الجمع بينهما قد يُفشل النشر أصلًا.
     s3.put_bucket_encryption(
         Bucket=bucket,
         ServerSideEncryptionConfiguration={"Rules": [{
             "ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"},
-            "BucketKeyEnabled": True,
         }]},
     )
-    log("  التشفير الافتراضي: مُفعَّل")
+    log("  التشفير الافتراضي: مُفعَّل (SSE-S3)")
+
+    # 2b) رفض أي وصول غير مشفّر النقل -- تسجيلات شخصية لا تُنقل على HTTP
+    import json as _json
+    s3.put_bucket_policy(Bucket=bucket, Policy=_json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Sid": "DenyInsecureTransport",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "s3:*",
+            "Resource": [f"arn:aws:s3:::{bucket}", f"arn:aws:s3:::{bucket}/*"],
+            "Condition": {"Bool": {"aws:SecureTransport": "false"}},
+        }],
+    }))
+    log("  رفض النقل غير المشفّر: مُفعَّل")
 
     # 3) الصوت الخام يُحذف بعد مدة -- التفريغ يبقى. يحدّ التكلفة تلقائيًا.
     s3.put_bucket_lifecycle_configuration(

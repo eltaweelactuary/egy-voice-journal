@@ -94,6 +94,23 @@ def contains(haystack: str, needle: str) -> bool:
     return bool(n) and n in normalize(haystack)
 
 
+def similarity(a: str, b: str) -> float:
+    """
+    تشابه **متماثل** بين نصين مطبّعين، من 0 إلى 1.
+
+    لماذا متماثل ولا نستخدم `wer` مباشرة: WER يقسّم على طول المرجع، فيتغيّر
+    الرقم بتبديل الوسيطين. عند مقارنة مسودات بعضها ببعض لا يوجد «مرجع»،
+    فالقسمة على الأطول تعطي رقمًا لا يتغيّر بترتيب المقارنة.
+    """
+    ta, tb = tokens(a), tokens(b)
+    if not ta and not tb:
+        return 1.0
+    if not ta or not tb:
+        return 0.0
+    d = wer(a, b)["distance"] if len(ta) >= len(tb) else wer(b, a)["distance"]
+    return max(0.0, 1.0 - d / max(len(ta), len(tb)))
+
+
 def wer(reference: str, hypothesis: str) -> dict:
     """
     نسبة خطأ الكلمات على نص مطبّع -- المقياس الذي يحسم «أي محرك أدق».

@@ -324,6 +324,23 @@ def parse_timestamped(raw: str) -> list[Line]:
     return lines
 
 
+# ---------------------------------------------------------------- خطّاف الطلبات
+#
+# يُستدعى قبل **كل طلب فعلي** لمزوّد. وُجد لأن الحساب على مستوى الملف كان
+# يخطئ بمعامل يساوي عدد المقاطع: تسجيل ساعتين يُقطَّع إلى ٨ مقاطع فيُرسل ٨
+# طلبات، وكانت تُحسب طلبًا واحدًا. فالسقف اليومي (٢٤٠ من ٢٥٠) كان بلا معنى،
+# ومحرك التقاطع يضاعف الخطأ لأنه يشغّل محركين لكل مقطع ثم مصالحة.
+#
+# المُشغِّل (العامل على AWS) يضبطه ليفرض فاصلًا زمنيًا وسقفًا يوميًا دقيقين.
+# يجوز للخطّاف أن يرفع SystemExit لإيقاف العمل عند نفاد الحصة.
+REQUEST_HOOK = None          # Callable[[str], None] | None
+
+
+def _hook(provider: str) -> None:
+    if REQUEST_HOOK is not None:
+        REQUEST_HOOK(provider)
+
+
 def _post_json(url: str, payload: dict, headers: dict,
                max_retries: int = 5) -> dict:
     """
@@ -441,6 +458,7 @@ def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[
         tried.append(model)
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         try:
+            _hook("gemini")          # يُحسب هذا الطلب قبل إرساله
             data = _post_json(url, payload, headers, max_retries=per_model_retries)
         except SystemExit as exc:
             msg = str(exc)
@@ -497,6 +515,7 @@ def transcribe_groq(path: Path, speakers: int, tail: str, hints: str) -> list[Li
     prompt = "تسجيل بالعامية المصرية. " + (hints.strip() or "")
 
     for attempt in range(5):
+        _hook("groq")
         with path.open("rb") as fh:
             r = requests.post(
                 "https://api.groq.com/openai/v1/audio/transcriptions",
@@ -668,25 +687,64 @@ def _draft_block(drafts: dict[str, list[Line]]) -> str:
     return "\n\n".join(out)
 
 
+def _draft_texts(drafts: dict[str, list[Line]]) -> dict[str, str]:
+    return {n: " ".join(l.text for l in lines) for n, lines in drafts.items()}
+
+
 def _agreement(drafts: dict[str, list[Line]]) -> float:
     """
-    نسبة اتفاق تقديرية بين أول مسودتين، على نص مطبّع.
+    متوسط التشابه على **كل** أزواج المسودات، لا على أول اثنتين.
 
-    تُقاس على النص المطبّع لا الخام، وإلا حُسِب اختلاف رسم («ازاي» مقابل
-    «إزّاي») خلافًا حقيقيًا فانهار الرقم بلا سبب.
+    مراجعة مستقلة نبّهت أن قصر المقياس على أول مسودتين يُهمل المحرك الثالث
+    فما فوق ويجعل الرقم يعتمد على ترتيب التشغيل. المتوسط على كل الأزواج
+    يستخدم كل ما لدينا ولا يتغيّر بالترتيب.
     """
     if len(drafts) < 2:
         return 0.0
     try:
-        from arabic import wer
+        from arabic import similarity
     except ImportError:
         return 0.0
-    a, b = list(drafts.values())[:2]
-    ta = " ".join(l.text for l in a)
-    tb = " ".join(l.text for l in b)
-    if not ta.strip() or not tb.strip():
-        return 0.0
-    return max(0.0, 1.0 - wer(ta, tb)["wer"])
+    texts = _draft_texts(drafts)
+    names = list(texts)
+    sims = [similarity(texts[names[i]], texts[names[j]])
+            for i in range(len(names)) for j in range(i + 1, len(names))]
+    return sum(sims) / len(sims) if sims else 0.0
+
+
+def _pick_best_draft(drafts: dict[str, list[Line]]) -> tuple[str, list[Line]]:
+    """
+    يختار المسودة **الأقرب إلى بقية المسودات** (medoid) -- لا الأطول.
+
+    الاحتياطي السابق كان يأخذ أكثر المسودات كلمات، وهذا ضرر فعّال لا مجرد
+    ضعف: في مخرَج حقيقي هلوس Groq بـ «مرحباً. مرحباً. مرحباً. يا عبد البر.
+    هل حياتك جميلة؟» (٩ كلمات) مقابل «ألو ألو» الصحيحة (كلمتان) -- فكان
+    الاحتياطي يختار الهلوسة بعينها، في اللحظة التي يُفترض أن يحمي فيها.
+
+    الهلوسة منفردة بطبعها: لا تجد ما يعضدها في مسودة أخرى. فالمسودة الأعلى
+    اتفاقًا مع البقية هي الأرجح صحةً، والطول ليس دليلًا على شيء.
+    """
+    names = list(drafts)
+    if len(names) == 1:
+        return names[0], drafts[names[0]]
+    try:
+        from arabic import similarity
+    except ImportError:
+        # بلا مقياس، الأقصر أأمن من الأطول: الهلوسة تُضيف كلامًا ولا تحذفه
+        pick = min(names, key=lambda n: sum(len(l.text.split())
+                                            for l in drafts[n]))
+        return pick, drafts[pick]
+
+    texts = _draft_texts(drafts)
+    scores: dict[str, float] = {}
+    for n in names:
+        others = [m for m in names if m != n]
+        scores[n] = sum(similarity(texts[n], texts[m]) for m in others) / len(others)
+    pick = max(names, key=lambda n: (scores[n], -sum(len(l.text.split())
+                                                     for l in drafts[n])))
+    detail = ", ".join(f"{n}={scores[n]:.0%}" for n in names)
+    log(f"    اختيار بالتوافق (لا بالطول): {detail} -> '{pick}'")
+    return pick, drafts[pick]
 
 
 def _reconcile(path: Path, drafts: dict[str, list[Line]], speakers: int,
@@ -749,6 +807,7 @@ def _reconcile(path: Path, drafts: dict[str, list[Line]], speakers: int,
 
     for m in models:
         try:
+            _hook("gemini")          # المصالحة طلب إضافي، ويجب أن يُحسب
             data = _post_json(
                 f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent",
                 payload, headers, max_retries=2)
@@ -815,22 +874,20 @@ def transcribe_consensus(path: Path, speakers: int, tail: str,
         return drafts[only]
 
     agree = _agreement(drafts)
-    log(f"    اتفاق المسودتين الأوليين: {agree:.0%}"
+    log(f"    متوسط الاتفاق على كل الأزواج: {agree:.0%}"
         + ("  (اتفاق منخفض -- الصوت صعب أو أحد المحركين يهلوس)"
            if agree < 0.6 else ""))
 
     if os.environ.get("CONSENSUS_RECONCILER", "llm").strip().lower() == "none":
-        best = max(drafts.items(), key=lambda kv: sum(len(l.text.split())
-                                                      for l in kv[1]))
-        log(f"    بلا مصالحة -- أخذت أطول مسودة ('{best[0]}')")
-        return best[1]
+        name, lines = _pick_best_draft(drafts)
+        log(f"    بلا مصالحة -- المسودة الأعلى توافقًا ('{name}')")
+        return lines
 
     merged = _reconcile(path, drafts, speakers, hints)
     if not merged:
-        best = max(drafts.items(), key=lambda kv: sum(len(l.text.split())
-                                                      for l in kv[1]))
-        log(f"    المصالحة فشلت -- رجعت لأطول مسودة ('{best[0]}')")
-        return best[1]
+        name, lines = _pick_best_draft(drafts)
+        log(f"    المصالحة فشلت -- رجعت للأعلى توافقًا ('{name}')")
+        return lines
     log(f"    مصالحة: {sum(len(l.text.split()) for l in merged)} كلمة نهائية")
     return merged
 
@@ -913,7 +970,12 @@ def write_outputs(lines: list[Line], meta: dict, out_dir: Path, stem: str) -> di
     try:
         from arabic import normalize as _norm
     except ImportError:
-        def _norm(t: str) -> str:               # لا تُسقط التفريغ لغياب وحدة
+        # لا نُسقط التفريغ لغياب وحدة، لكن الصمت هنا خطر: الحقل سيصير مطابقًا
+        # للخام فيظن القارئ أن التطبيع يعمل والبحث سيفشل بصمت. فنُعلن.
+        log("    تنبيه: arabic.py غير موجود -- التطبيع معطّل،"
+            " وحقل normalized سيطابق النص الخام. البحث سيفشل على اختلاف الرسم.")
+
+        def _norm(t: str) -> str:
             return t
 
     js = out_dir / f"{stem}.json"

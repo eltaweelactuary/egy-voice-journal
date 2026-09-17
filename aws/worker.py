@@ -3,23 +3,36 @@
 """
 العامل -- يستنزف طابور SQS بالتتابع ثم يخرج.
 
-مبدأ التصميم الحاكم: **نسخة واحدة فقط تعمل في أي لحظة، وتعالج ملفًا واحدًا
-في المرة.** التوازي هنا عطب لا تحسين: الطبقة المجانية لـ Gemini حدّها ١٠
-طلبات/دقيقة، ورفع دفعة من ٢٠ ملفًا بالتوازي يفجّرها فورًا. قياس حقيقي: ملف
-واحد استهلك 1012 ثانية بسبب 503 متكرر.
+هذه النسخة تعالج ما وجده مجلس مراجعة من ثلاثة موديلات مستقلة (كلهم: REVISE):
 
-يخرج بمجرد أن يفرغ الطابور -- فلا تُدفع ثانية Fargate واحدة بلا عمل.
+1. **القفل الذري** (BLOCKER، وجده مراجعان). فحصُ Lambda لعدد المهام العاملة
+   ثم تشغيلُ مهمة هو تسلسل غير ذري، وECS متسق تدريجيًا -- فاستدعاءان
+   متقاربان قد يريان «لا مهام» فيشغّل كلٌّ منهما عاملًا. الحل: عقد إيجار
+   حصري بكتابة S3 شرطية. العامل الثاني يجد القفل فيخرج فورًا. الضمان مفروض
+   هنا حيث يهم، لا في فحص استشاري قبله.
 
-متغيّرات البيئة:
-    BUCKET            اسم الحاوية (إلزامي)
-    QUEUE_URL         رابط طابور SQS (إلزامي)
-    PROVIDER_ORDER    ترتيب المزوّدين، افتراضي "gemini,groq"
-    FALLBACK_POLICY   degrade (افتراضي) أو requeue
-    SPEAKERS          افتراضي 2
-    SSM_PREFIX        بادئة مفاتيح API في Parameter Store، افتراضي /journal/
-    MAX_RUNTIME_SEC   ميزانية زمن التشغيل، افتراضي 3000
-    GEMINI_MIN_GAP    ثوانٍ بين طلبات Gemini، افتراضي 6 (= 10/دقيقة)
-    GEMINI_DAILY_CAP  سقف يومي، افتراضي 240 (الحد 250)
+2. **heartbeat مهلة الظهور** (BLOCKER، وجده مراجعان). الوثيقة وعدت بتمديد
+   دوري والتنفيذ لم يفعله. ملف واحد استهلك ١٠١٢ ثانية في قياس حقيقي، فتجاوز
+   ٣٦٠٠ ثانية ممكن -- وحينها تعود الرسالة للظهور ويلتقطها عامل آخر.
+
+3. **الحساب لكل طلب لا لكل ملف** (BLOCKER، وجده مراجعان). التفريغ يقطّع
+   الملف ويرسل طلبًا لكل مقطع، فتسجيل ساعتين = ٨ طلبات كانت تُحسب طلبًا
+   واحدًا. الآن نضبط `transcribe.REQUEST_HOOK` فيُحسب كل طلب فعلي.
+
+4. **مصالحة الصوت الخام** (وجده مراجعان). لو مات العامل بعد رفع التفريغ
+   وقبل نقل الصوت، كان الصوت يبقى في inbox للأبد: الإدمبوتنسي ترى التفريغ
+   موجودًا فتتخطّى، ولا حدث جديد يُطلق معالجة. الآن مسار التخطّي **يصالح**
+   حالة الصوت بدل أن يتجاهلها.
+
+5. **فك الترميز الصحيح**. أحداث EventBridge غير مُرمَّزة، إشعارات S3
+   مُرمَّزة. تطبيق `unquote_plus` على الاثنين يفسد مفتاحًا فيه `+` حرفيًا.
+
+6. **التسلسل الذاتي**. لو خرج العامل وفي الطابور عمل، يستدعي المُشغِّل بدل
+   انتظار الجدول.
+
+متغيّرات البيئة: BUCKET، QUEUE_URL (إلزاميان)، PROVIDER_ORDER،
+FALLBACK_POLICY، SPEAKERS، SSM_PREFIX، MAX_RUNTIME_SEC، RESERVE_SEC،
+GEMINI_MIN_GAP، GEMINI_DAILY_CAP، TRIGGER_FUNCTION، LOCK_TTL_SEC.
 """
 
 from __future__ import annotations
@@ -28,13 +41,18 @@ import datetime as dt
 import json
 import os
 import sys
+import threading
 import time
 from pathlib import Path
+from urllib.parse import unquote_plus
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import boto3                                                    # noqa: E402
-from transcribe import transcribe_file, log                     # noqa: E402
+from botocore.exceptions import ClientError                      # noqa: E402
+
+import transcribe as TR                                          # noqa: E402
+from transcribe import log, transcribe_file                      # noqa: E402
 from s3_pipeline import (                                        # noqa: E402
     AUDIO_EXTS, RAW_AUDIO_TTL_DAYS, caller_of, list_keys,
     rebuild_summary, safe_name,
@@ -48,8 +66,12 @@ FALLBACK_POLICY = os.environ.get("FALLBACK_POLICY", "degrade").strip().lower()
 SPEAKERS = int(os.environ.get("SPEAKERS", "2"))
 SSM_PREFIX = os.environ.get("SSM_PREFIX", "/journal/")
 MAX_RUNTIME_SEC = int(os.environ.get("MAX_RUNTIME_SEC", "3000"))
+RESERVE_SEC = int(os.environ.get("RESERVE_SEC", "600"))
 GEMINI_MIN_GAP = float(os.environ.get("GEMINI_MIN_GAP", "6"))
 GEMINI_DAILY_CAP = int(os.environ.get("GEMINI_DAILY_CAP", "240"))
+TRIGGER_FUNCTION = os.environ.get("TRIGGER_FUNCTION", "")
+LOCK_TTL_SEC = int(os.environ.get("LOCK_TTL_SEC", "3900"))
+LOCK_KEY = "state/worker.lock"
 
 WORKDIR = Path(os.environ.get("WORKDIR", "/tmp/journal"))
 STARTED = time.time()
@@ -59,16 +81,122 @@ def budget_left() -> float:
     return MAX_RUNTIME_SEC - (time.time() - STARTED)
 
 
+# ------------------------------------------------------------ قفل حصري
+
+class Lease:
+    """
+    عقد إيجار حصري على العمل، بكتابة S3 **شرطية** (If-None-Match).
+
+    الكتابة الشرطية ذرية على مستوى S3: من يكتب أولًا يفوز، والثاني يُرفض
+    بـ PreconditionFailed. هذا يجعل «عامل واحد» خاصية مفروضة لا رجاءً.
+
+    للقفل مدة صلاحية: عامل يُقتل بلا تحرير لا يعطّل النظام للأبد.
+    """
+
+    def __init__(self, s3, bucket: str):
+        self.s3, self.bucket = s3, bucket
+        self.held = False
+        self.owner = f"{os.environ.get('HOSTNAME', 'worker')}-{os.getpid()}-{int(STARTED)}"
+
+    def _body(self) -> bytes:
+        return json.dumps({
+            "owner": self.owner,
+            "acquired": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "ttl_sec": LOCK_TTL_SEC,
+        }, ensure_ascii=False).encode("utf-8")
+
+    def _try_write(self) -> bool:
+        try:
+            self.s3.put_object(Bucket=self.bucket, Key=LOCK_KEY,
+                               Body=self._body(), IfNoneMatch="*",
+                               ContentType="application/json")
+            return True
+        except ClientError as exc:
+            code = exc.response.get("Error", {}).get("Code", "")
+            if code in ("PreconditionFailed", "ConditionalRequestConflict"):
+                return False
+            raise
+        except (TypeError, ValueError):
+            # botocore أقدم من أن يعرف IfNoneMatch -- لا نتظاهر بضمان لا نملكه
+            log("تحذير: هذه النسخة من botocore لا تدعم الكتابة الشرطية،"
+                " فالقفل غير ذري. حدّث boto3 لضمان عامل واحد.")
+            self.s3.put_object(Bucket=self.bucket, Key=LOCK_KEY,
+                               Body=self._body())
+            return True
+
+    def acquire(self) -> bool:
+        if self._try_write():
+            self.held = True
+            return True
+        # القفل مأخوذ: افحص عمره، فقد يكون عاملًا مات دون تحرير
+        try:
+            head = self.s3.head_object(Bucket=self.bucket, Key=LOCK_KEY)
+            age = (dt.datetime.now(dt.timezone.utc) - head["LastModified"]).total_seconds()
+        except ClientError:
+            age = 0.0
+        if age > LOCK_TTL_SEC:
+            log(f"القفل قديم ({age:.0f}ث > {LOCK_TTL_SEC}ث) -- أعتبره متروكًا وأستحوذ")
+            self.s3.delete_object(Bucket=self.bucket, Key=LOCK_KEY)
+            if self._try_write():
+                self.held = True
+                return True
+        log(f"عامل آخر يحمل القفل (عمره {age:.0f}ث) -- أخرج بلا عمل")
+        return False
+
+    def refresh(self) -> None:
+        if self.held:
+            try:
+                self.s3.put_object(Bucket=self.bucket, Key=LOCK_KEY,
+                                   Body=self._body(),
+                                   ContentType="application/json")
+            except ClientError:
+                pass
+
+    def release(self) -> None:
+        if not self.held:
+            return
+        try:
+            self.s3.delete_object(Bucket=self.bucket, Key=LOCK_KEY)
+        except ClientError:
+            pass
+        self.held = False
+
+
+# ------------------------------------------------------------ heartbeat
+
+class Heartbeat(threading.Thread):
+    """
+    يمدّد مهلة ظهور الرسالة ويجدّد القفل أثناء معالجة طويلة.
+
+    بدونه، ملف يتجاوز مهلة الظهور تعود رسالته للطابور فيُعالج مرتين --
+    وقياس حقيقي أعطى ١٠١٢ ثانية لملف واحد، فالتجاوز ممكن لا نظري.
+    """
+
+    def __init__(self, sqs, queue_url: str, receipt: str, lease: Lease,
+                 interval: int = 300, visibility: int = 1800):
+        super().__init__(daemon=True)
+        self.sqs, self.queue_url, self.receipt = sqs, queue_url, receipt
+        self.lease, self.interval, self.visibility = lease, interval, visibility
+        self._stop = threading.Event()
+
+    def run(self) -> None:
+        while not self._stop.wait(self.interval):
+            try:
+                self.sqs.change_message_visibility(
+                    QueueUrl=self.queue_url, ReceiptHandle=self.receipt,
+                    VisibilityTimeout=self.visibility)
+                self.lease.refresh()
+            except Exception as exc:
+                log(f"  تحذير: تمديد المهلة فشل: {type(exc).__name__}")
+
+    def stop(self) -> None:
+        self._stop.set()
+
+
 # ------------------------------------------------------------ الأسرار
 
 def load_secrets(ssm) -> None:
-    """
-    يقرأ مفاتيح API من SSM Parameter Store.
-
-    Parameter Store (النوع القياسي) مجاني، بخلاف Secrets Manager الذي يكلّف
-    ٠٫٤٠ دولار لكل سرّ شهريًا. ولا نضع المفاتيح في متغيّرات بيئة تعريف
-    المهمة لأنها تظهر نصًا صريحًا لكل من يقرأ التعريف في الكونسول.
-    """
+    """يقرأ مفاتيح API من SSM Parameter Store (النوع القياسي مجاني)."""
     names = ["GEMINI_API_KEY", "GROQ_API_KEY", "ELEVENLABS_API_KEY"]
     try:
         resp = ssm.get_parameters(
@@ -83,19 +211,17 @@ def load_secrets(ssm) -> None:
             os.environ[key] = p["Value"]
             got.append(key)
     log(f"الأسرار المحمّلة: {got or 'لا شيء'}")
-    for miss in resp.get("InvalidParameters", []) or []:
-        log(f"  غير مضبوط: {miss}")
 
 
-# ------------------------------------------------------------ حدود المعدل
+# ------------------------------------------------------------ الحصة
 
 class Quota:
     """
-    مُحدِّد معدل + سقف يومي محفوظ في S3.
+    فاصل زمني وسقف يومي، يُحاسبان **لكل طلب فعلي**.
 
-    السقف اليومي يُحفظ في الحاوية لا في الذاكرة، لأن العامل يُنشأ ويُفنى عدة
-    مرات في اليوم فذاكرته لا تعيش. عند نفاد السقف نتوقف بهدوء ونترك الرسائل
-    في الطابور للغد -- لا نحرقها في فشل مؤكد.
+    يُثبَّت كـ `transcribe.REQUEST_HOOK` فيُستدعى قبل كل نداء لمزوّد -- بما
+    في ذلك كل مقطع من الملف، وكل محرك في التقاطع، وطلب المصالحة. الحساب على
+    مستوى الملف كان يخطئ بمعامل يساوي عدد المقاطع.
     """
 
     def __init__(self, s3, bucket: str):
@@ -103,6 +229,7 @@ class Quota:
         self.day = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
         self.key = f"state/quota-{self.day}.json"
         self.used = self._read()
+        self.start_used = self.used
         self.last_call = 0.0
 
     def _read(self) -> int:
@@ -112,7 +239,7 @@ class Quota:
         except Exception:
             return 0
 
-    def _write(self) -> None:
+    def flush(self) -> None:
         try:
             self.s3.put_object(
                 Bucket=self.bucket, Key=self.key,
@@ -120,27 +247,29 @@ class Quota:
                                 ensure_ascii=False).encode("utf-8"),
                 ContentType="application/json")
         except Exception as exc:
-            log(f"تحذير: تعذّر حفظ عدّاد الحصة: {exc}")
+            log(f"  تحذير: حفظ عدّاد الحصة فشل: {type(exc).__name__}")
 
-    def gemini_available(self) -> bool:
-        return self.used < GEMINI_DAILY_CAP
-
-    def before_gemini(self) -> None:
+    def hook(self, provider: str) -> None:
+        """يُستدعى قبل كل طلب. يرفع SystemExit عند نفاد الحصة."""
+        if provider != "gemini":
+            return                       # حدود groq المجانية سخية، لا نقيّدها
+        if self.used >= GEMINI_DAILY_CAP:
+            raise SystemExit(
+                f"نفدت حصة Gemini اليومية ({self.used}/{GEMINI_DAILY_CAP})."
+                " سيسقط للمزوّد التالي أو يُعاد لاحقًا.")
         gap = GEMINI_MIN_GAP - (time.time() - self.last_call)
         if gap > 0:
             time.sleep(gap)
         self.last_call = time.time()
         self.used += 1
-        self._write()
+        if self.used % 5 == 0:           # لا نكتب على S3 لكل طلب
+            self.flush()
 
 
 # ------------------------------------------------------------ الفهرس
 
 def build_index(s3, bucket: str) -> dict:
-    """
-    يبني index.json في الجذر -- الملف الوحيد الذي تقرأه أي عملية لاحقة،
-    فلا تحتاج سرد الحاوية.
-    """
+    """يبني index.json -- الملف الوحيد الذي تقرأه أي عملية لاحقة."""
     callers: dict[str, list] = {}
     for obj in list_keys(s3, bucket, "journal/"):
         key = obj["Key"]
@@ -190,43 +319,67 @@ def build_index(s3, bucket: str) -> dict:
     return index
 
 
-# ------------------------------------------------------------ المعالجة
+# ------------------------------------------------------------ الرسائل
 
 def keys_from_message(body: str) -> list[str]:
-    """يستخرج مفاتيح S3 من رسالة، سواء جاءت من EventBridge أو من إشعار S3."""
+    """
+    يستخرج مفاتيح S3 من رسالة.
+
+    فرقٌ مهم: `detail.object.key` في EventBridge **غير** مُرمَّز، بينما مفتاح
+    إشعار S3 المباشر مُرمَّز بترميز URL. فك الترميز على الاثنين يفسد أي مفتاح
+    فيه `+` حرفيًا -- وأسماء تسجيلات الموبايل مليئة بالمحارف الغريبة.
+    """
     try:
         msg = json.loads(body)
     except Exception:
         return []
-    out = []
+    out: list[str] = []
     detail = msg.get("detail") or {}
-    if detail.get("object", {}).get("key"):          # EventBridge
-        out.append(detail["object"]["key"])
-    for rec in msg.get("Records", []) or []:         # إشعار S3 المباشر
-        k = rec.get("s3", {}).get("object", {}).get("key")
+    k = (detail.get("object") or {}).get("key")
+    if k:
+        out.append(k)                                  # EventBridge: كما هو
+    for rec in msg.get("Records", []) or []:
+        k = ((rec.get("s3") or {}).get("object") or {}).get("key")
         if k:
-            out.append(k)
-    from urllib.parse import unquote_plus
-    return [unquote_plus(k) for k in out]
+            out.append(unquote_plus(k))                # إشعار S3: مُرمَّز
+    return out
+
+
+# ------------------------------------------------------------ المعالجة
+
+def reconcile_raw(s3, key: str, caller: str, stem: str) -> None:
+    """
+    يُنهي حالة الصوت الخام لملف فُرّغ سابقًا.
+
+    السبب: لو مات العامل بعد رفع التفريغ وقبل نقل الصوت، يبقى الصوت في
+    inbox بلا نهاية -- الإدمبوتنسي ترى التفريغ فتتخطّى، ولا حدث جديد يُطلق
+    معالجة، وقاعدة الحذف التلقائي تخصّ processed/ لا inbox/. فالتخطّي يجب
+    أن **يصالح** لا أن يتجاهل.
+    """
+    try:
+        s3.head_object(Bucket=BUCKET, Key=key)
+    except ClientError:
+        return                                   # لم يبقَ شيء، تمام
+    dest = f"processed/{caller}/{stem}{Path(key).suffix.lower()}"
+    try:
+        s3.copy_object(Bucket=BUCKET, Key=dest,
+                       CopySource={"Bucket": BUCKET, "Key": key})
+        s3.delete_object(Bucket=BUCKET, Key=key)
+        log(f"  مصالحة: نُقل صوت خام متروك إلى {dest}")
+    except ClientError as exc:
+        log(f"  تحذير: مصالحة الصوت الخام فشلت: {exc.response.get('Error', {}).get('Code')}")
 
 
 def transcribe_with_fallback(audio: Path, out_dir: Path, caller: str,
-                             stem: str, quota: Quota) -> str:
+                             stem: str) -> str:
     """
-    يجرّب المزوّدين بالترتيب. يرجّع اسم المزوّد الناجح، أو "" لو فشل الجميع.
+    يجرّب المزوّدين بالترتيب. الحصة تُحاسب داخل الخطّاف لا هنا.
 
-    سياسة الفشل:
-      degrade  (افتراضي) -- اسقط للمزوّد التالي فورًا. المالك فضّل هذا صراحةً:
-                 «النموذج الآخر كان يعمل جيدًا بدون مشاكل ولو مش دقيق».
-      requeue  -- لا تسقط لمزوّد أقل دقة؛ أعد الرسالة للطابour وحاول لاحقًا
-                 بالمزوّد الجيد. اختره لو الدقة أهم من سرعة الإنجاز.
+    السياسة `degrade` هي الافتراضي **بقرار المالك الصريح**: «النموذج الآخر
+    كان يعمل جيدًا بدون مشاكل ولو مش دقيق». الثمن معروف وموثّق: groq يُفصّح
+    ويهلوس أحيانًا.
     """
     for provider in PROVIDER_ORDER:
-        if provider == "gemini":
-            if not quota.gemini_available():
-                log(f"    تخطّي gemini: بلغنا السقف اليومي ({quota.used})")
-                continue
-            quota.before_gemini()
         try:
             transcribe_file(audio, out_dir, provider, SPEAKERS, "",
                             title=f"{caller} — {stem}")
@@ -236,12 +389,12 @@ def transcribe_with_fallback(audio: Path, out_dir: Path, caller: str,
         except Exception as exc:
             log(f"    '{provider}' فشل: {type(exc).__name__}: {str(exc)[:200]}")
         if FALLBACK_POLICY == "requeue":
-            log("    السياسة requeue -- لا سقوط لمزوّد أقل دقة، سنحاول لاحقًا")
+            log("    السياسة requeue -- لا سقوط لمزوّد أقل دقة، نحاول لاحقًا")
             return ""
     return ""
 
 
-def handle(s3, sqs, key: str, quota: Quota) -> bool:
+def handle(s3, key: str) -> bool:
     if Path(key).suffix.lower() not in AUDIO_EXTS:
         log(f"  تخطٍّ (ليس صوتًا): {key}")
         return True
@@ -253,9 +406,9 @@ def handle(s3, sqs, key: str, quota: Quota) -> bool:
     stem = safe_name(Path(key).stem, "rec")
     log(f"\n{'='*60}\n{key}\n  المتصل: {caller}\n{'='*60}")
 
-    # إدمبوتنسي: SQS يسلّم at-least-once، وإعادة المحاولة طبيعية
     if list_keys(s3, BUCKET, f"journal/{caller}/{stem}.json"):
-        log("  مُفرَّغ سابقًا -- تخطٍّ")
+        log("  مُفرَّغ سابقًا -- تخطٍّ، مع مصالحة حالة الصوت")
+        reconcile_raw(s3, key, caller, stem)
         return True
 
     local = WORKDIR / caller
@@ -267,7 +420,7 @@ def handle(s3, sqs, key: str, quota: Quota) -> bool:
         s3.download_file(BUCKET, key, str(audio))
         log(f"  نُزّل: {audio.stat().st_size/1e6:.1f} MB")
 
-        used = transcribe_with_fallback(audio, out_dir, caller, stem, quota)
+        used = transcribe_with_fallback(audio, out_dir, caller, stem)
         if not used:
             log("  فشل كل المزوّدين -- الرسالة تبقى للمحاولة القادمة")
             return False
@@ -278,9 +431,7 @@ def handle(s3, sqs, key: str, quota: Quota) -> bool:
             s3.upload_file(str(f), BUCKET, f"journal/{caller}/{f.name}",
                            ExtraArgs={"ContentType": f"{ctype}; charset=utf-8"})
 
-        s3.copy_object(Bucket=BUCKET, Key=f"processed/{caller}/{audio.name}",
-                       CopySource={"Bucket": BUCKET, "Key": key})
-        s3.delete_object(Bucket=BUCKET, Key=key)
+        reconcile_raw(s3, key, caller, stem)
         log(f"  تم عبر '{used}'. الصوت في processed/"
             f" (يُحذف بعد {RAW_AUDIO_TTL_DAYS} يومًا)")
         return True
@@ -296,66 +447,114 @@ def handle(s3, sqs, key: str, quota: Quota) -> bool:
                     pass
 
 
+def queue_depth(sqs) -> int:
+    try:
+        a = sqs.get_queue_attributes(
+            QueueUrl=QUEUE_URL,
+            AttributeNames=["ApproximateNumberOfMessages",
+                            "ApproximateNumberOfMessagesNotVisible"])["Attributes"]
+        return (int(a.get("ApproximateNumberOfMessages", 0))
+                + int(a.get("ApproximateNumberOfMessagesNotVisible", 0)))
+    except Exception:
+        return 0
+
+
+def chain_next(depth: int) -> None:
+    """
+    يستدعي المُشغِّل لو بقي عمل عند الخروج.
+
+    بدون هذا، عامل يستنفد ميزانيته وفي الطابور عمل ينتظر الجدول -- وهي فجوة
+    توفّر نبّه إليها المجلس.
+    """
+    if depth <= 0 or not TRIGGER_FUNCTION:
+        return
+    try:
+        boto3.client("lambda").invoke(
+            FunctionName=TRIGGER_FUNCTION, InvocationType="Event",
+            Payload=b'{"source":"worker-chain"}')
+        log(f"بقي {depth} في الطابور -- استدعيت المُشغِّل لعامل تالٍ")
+    except Exception as exc:
+        log(f"تحذير: التسلسل الذاتي فشل ({type(exc).__name__})."
+            " الجدول الاحتياطي سيتكفّل.")
+
+
 def main() -> None:
     if not BUCKET or not QUEUE_URL:
         print("[خطأ] BUCKET و QUEUE_URL إلزاميان", file=sys.stderr)
         sys.exit(2)
 
     s3, sqs, ssm = boto3.client("s3"), boto3.client("sqs"), boto3.client("ssm")
-    load_secrets(ssm)
-    WORKDIR.mkdir(parents=True, exist_ok=True)
 
-    quota = Quota(s3, BUCKET)
-    log(f"العامل بدأ. المزوّدون: {PROVIDER_ORDER} | السياسة: {FALLBACK_POLICY}"
-        f" | حصة gemini المستهلكة اليوم: {quota.used}/{GEMINI_DAILY_CAP}")
+    lease = Lease(s3, BUCKET)
+    if not lease.acquire():
+        sys.exit(0)                     # ليس خطأ: عامل آخر يعمل، وهذا مقصود
 
     done = failed = 0
     touched: set[str] = set()
+    quota = Quota(s3, BUCKET)
 
-    while budget_left() > 300:                 # اترك هامشًا لبناء الملخصات
-        resp = sqs.receive_message(
-            QueueUrl=QUEUE_URL, MaxNumberOfMessages=1,
-            WaitTimeSeconds=20, VisibilityTimeout=3600)
-        msgs = resp.get("Messages", [])
-        if not msgs:
-            log("الطابور فارغ -- إنهاء (لا ثانية Fargate مهدورة)")
-            break
+    try:
+        load_secrets(ssm)
+        WORKDIR.mkdir(parents=True, exist_ok=True)
+        TR.REQUEST_HOOK = quota.hook    # الحساب لكل طلب، لا لكل ملف
+        log(f"العامل بدأ (قفل: {lease.owner}). المزوّدون: {PROVIDER_ORDER}"
+            f" | السياسة: {FALLBACK_POLICY}"
+            f" | حصة gemini اليوم: {quota.used}/{GEMINI_DAILY_CAP}")
 
-        m = msgs[0]
-        keys = keys_from_message(m["Body"])
-        if not keys:
-            log("رسالة غير مفهومة -- حذف")
-            sqs.delete_message(QueueUrl=QUEUE_URL, ReceiptHandle=m["ReceiptHandle"])
-            continue
+        while budget_left() > RESERVE_SEC:
+            resp = sqs.receive_message(
+                QueueUrl=QUEUE_URL, MaxNumberOfMessages=1,
+                WaitTimeSeconds=20, VisibilityTimeout=1800)
+            msgs = resp.get("Messages", [])
+            if not msgs:
+                log("الطابور فارغ -- إنهاء (لا ثانية Fargate مهدورة)")
+                break
 
-        ok = True
-        for key in keys:
-            if handle(s3, sqs, key, quota):
-                touched.add(caller_of(key))
-                done += 1
+            m = msgs[0]
+            keys = keys_from_message(m["Body"])
+            if not keys:
+                log("رسالة غير مفهومة -- حذف")
+                sqs.delete_message(QueueUrl=QUEUE_URL,
+                                   ReceiptHandle=m["ReceiptHandle"])
+                continue
+
+            hb = Heartbeat(sqs, QUEUE_URL, m["ReceiptHandle"], lease)
+            hb.start()
+            try:
+                ok = True
+                for key in keys:
+                    if handle(s3, key):
+                        touched.add(caller_of(key))
+                        done += 1
+                    else:
+                        ok = False
+                        failed += 1
+            finally:
+                hb.stop()
+
+            if ok:
+                sqs.delete_message(QueueUrl=QUEUE_URL,
+                                   ReceiptHandle=m["ReceiptHandle"])
             else:
-                ok = False
-                failed += 1
+                sqs.change_message_visibility(
+                    QueueUrl=QUEUE_URL, ReceiptHandle=m["ReceiptHandle"],
+                    VisibilityTimeout=300)
 
-        if ok:
-            sqs.delete_message(QueueUrl=QUEUE_URL, ReceiptHandle=m["ReceiptHandle"])
-        else:
-            # أعِدها للظهور بعد ٥ دقائق -- SQS يرسلها للـ DLQ بعد 3 محاولات
-            sqs.change_message_visibility(
-                QueueUrl=QUEUE_URL, ReceiptHandle=m["ReceiptHandle"],
-                VisibilityTimeout=300)
+        if touched:
+            log(f"\nإعادة بناء ملخصات: {sorted(touched)}")
+            for c in sorted(touched):
+                rebuild_summary(s3, BUCKET, c)
+            build_index(s3, BUCKET)
+    finally:
+        TR.REQUEST_HOOK = None
+        if quota.used != quota.start_used:
+            quota.flush()
+        depth = queue_depth(sqs)
+        lease.release()                  # حرّر القفل قبل استدعاء التالي
+        chain_next(depth)
 
-        if not quota.gemini_available() and PROVIDER_ORDER == ["gemini"]:
-            log("نفدت حصة gemini ولا مزوّد بديل -- إنهاء، والباقي للغد")
-            break
-
-    if touched:
-        log(f"\nإعادة بناء ملخصات: {sorted(touched)}")
-        for c in sorted(touched):
-            rebuild_summary(s3, BUCKET, c)
-        build_index(s3, BUCKET)
-
-    log(f"\nانتهى العامل: نجح {done} / فشل {failed}")
+    log(f"\nانتهى العامل: نجح {done} / فشل {failed}"
+        f" | طلبات gemini هذه الجلسة: {quota.used - quota.start_used}")
     sys.exit(0)
 
 
