@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٠٢_١٨٥٣١٩",
+    "date": "2026-09-17 22:14",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٠٢_١٨٥٣١٩.m4a",
+    "duration": 121.988625,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 4,
+    "words": 9
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحبة المصرية المصرية.",
+      "normalized": "مرحبه المصريه المصريه"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    },
+    {
+      "start": 85.992004,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    },
+    {
+      "start": 115.992004,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    }
+  ]
+}

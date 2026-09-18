@@ -63,15 +63,23 @@ def die(msg: str) -> "None":
 # ---------------------------------------------------------------- المفاتيح
 
 def load_env() -> None:
-    """يقرأ .env بجانب السكربت بدون أي تبعية خارجية."""
+    """
+    يقرأ .env بجانب السكربت بدون أي تبعية خارجية.
+
+    يتحمّل BOM عن قصد: محرّرات ويندوز و`Set-Content -Encoding utf8` في
+    PowerShell 5.1 تكتب UTF-8 **مع BOM**، فيصير اسم أول متغيّر
+    `\\ufeffGEMINI_API_KEY` بدل `GEMINI_API_KEY` -- ويظهر العطب كأن المفتاح
+    غير موجود بينما هو مكتوب في الملف. وقع هذا فعلًا، ومرتين.
+    """
     if not ENV_FILE.exists():
         return
-    for raw in ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
+    text = ENV_FILE.read_text(encoding="utf-8-sig")      # -sig يُسقط BOM
+    for raw in text.splitlines():
+        line = raw.strip().lstrip("\ufeff")               # حزام أمان إضافي
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, _, val = line.partition("=")
-        key = key.strip()
+        key = key.strip().lstrip("\ufeff")
         val = val.strip().strip('"').strip("'")
         # متغيرات البيئة الحقيقية لها الأولوية على الملف
         if key and key not in os.environ:
@@ -324,27 +332,62 @@ def parse_timestamped(raw: str) -> list[Line]:
     return lines
 
 
-def _post_json(url: str, payload: dict, headers: dict) -> dict:
+# ---------------------------------------------------------------- خطّاف الطلبات
+#
+# يُستدعى قبل **كل طلب فعلي** لمزوّد. وُجد لأن الحساب على مستوى الملف كان
+# يخطئ بمعامل يساوي عدد المقاطع: تسجيل ساعتين يُقطَّع إلى ٨ مقاطع فيُرسل ٨
+# طلبات، وكانت تُحسب طلبًا واحدًا. فالسقف اليومي (٢٤٠ من ٢٥٠) كان بلا معنى،
+# ومحرك التقاطع يضاعف الخطأ لأنه يشغّل محركين لكل مقطع ثم مصالحة.
+#
+# المُشغِّل (العامل على AWS) يضبطه ليفرض فاصلًا زمنيًا وسقفًا يوميًا دقيقين.
+# يجوز للخطّاف أن يرفع SystemExit لإيقاف العمل عند نفاد الحصة.
+REQUEST_HOOK = None          # Callable[[str], None] | None
+
+
+def _hook(provider: str) -> None:
+    if REQUEST_HOOK is not None:
+        REQUEST_HOOK(provider)
+
+
+def _post_json(url: str, payload: dict, headers: dict,
+               max_retries: int = 5) -> dict:
+    """
+    طلب POST مع إعادة محاولة على الأعطال المؤقتة (429 و5xx).
+
+    `max_retries` هو عدد المحاولات على **نفس** العنوان قبل الاستسلام:
+
+    - الافتراضي 5 يحافظ على سلوك `ask.py`، حيث لا يوجد بديل عن الطلب: إن فشل
+      فقد فشل السؤال كله، فالانتظار أفضل من الفشل.
+    - سلسلة موديلات Gemini تمرّر رقمًا **صغيرًا** عن قصد. الانتظار الطويل على
+      موديل مشغول لا معنى له وقد يوجد موديل آخر بحصّة مستقلة تمامًا: السقوط
+      للتالي أسرع وأرجح نجاحًا من الانتظار. بـ 5 محاولات كان كل موديل ميت أو
+      مشغول يكلّف ٢٠+٤٠+٦٠+٨٠+١٠٠ = **خمس دقائق** قبل تجربة التالي، أي ربع
+      ساعة على سلسلة من ثلاثة. هذا يقتل أي تشغيل مجدول.
+    """
     import requests
     last_err = ""
-    for attempt in range(5):
+    attempts = max(1, int(max_retries))
+    for attempt in range(attempts):
         try:
             r = requests.post(url, json=payload, headers=headers, timeout=HTTP_TIMEOUT)
         except Exception as exc:  # شبكة متقطعة
             last_err = str(exc)
-            time.sleep(4 * (attempt + 1))
+            if attempt + 1 < attempts:
+                time.sleep(min(4 * (attempt + 1), 30))
             continue
         if r.status_code == 200:
             return r.json()
         # 429 = تجاوزنا حد الطبقة المجانية، 5xx = عطل مؤقت -> نعيد المحاولة
         if r.status_code == 429 or r.status_code >= 500:
-            wait = 20 * (attempt + 1)
+            last_err = f"HTTP {r.status_code}: {r.text[:400]}"
+            if attempt + 1 >= attempts:
+                break                      # لا تنم قبل الاستسلام -- انتظار مهدور
+            wait = min(20 * (attempt + 1), 60)
             log(f"    الخدمة مشغولة ({r.status_code}) -- إعادة محاولة بعد {wait}ث")
-            last_err = r.text[:400]
             time.sleep(wait)
             continue
         die(f"المزود رفض الطلب ({r.status_code}):\n{r.text[:800]}")
-    die(f"فشل الطلب بعد 5 محاولات. آخر خطأ:\n{last_err[:800]}")
+    die(f"فشل الطلب بعد {attempts} محاولة. آخر خطأ:\n{last_err[:800]}")
     return {}
 
 
@@ -364,8 +407,12 @@ DEFAULT_GEMINI_MODELS = [
     "gemini-flash-latest",      # alias ذاتي التحديث -- يشير دائمًا لموديل Flash الحالي
     "gemini-3.6-flash",         # الرائد الحالي في عيلة Flash
     "gemini-3.5-flash-lite",    # أسرع وأرخص، توفر عالٍ في الطبقة المجانية
-    "gemini-2.5-flash-lite",    # احتياطي للحسابات التي ما زال لديها وصول للجيل الأقدم
 ]
+# أُزيل "gemini-2.5-flash-lite": تقاعد فعلًا، ورُصد يرجع 404 في تشغيل حقيقي
+# ("no longer available to new users ... use models/gemini-3.5-flash-lite").
+# لا حاجة لإضافة بدائل يدويًا بعد الآن: النمط أدناه يقرأ اسم البديل من نص
+# الخطأ نفسه ويجرّبه فورًا، فالسلسلة تُصلح نفسها عند أي تقاعد لاحق.
+_RETIRED_REPLACEMENT = re.compile(r"use\s+models/([A-Za-z0-9._\-]+)")
 
 
 def _gemini_model_cascade() -> list[str]:
@@ -400,18 +447,44 @@ def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[
     headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
 
     models = [os.environ["GEMINI_MODEL"]] if os.environ.get("GEMINI_MODEL", "").strip() else _gemini_model_cascade()
+
+    # محاولات قليلة عن قصد: موديل مشغول لا يستحق الانتظار عندما يوجد موديل آخر
+    # بحصّة مستقلة. قياس حقيقي: بـ 5 محاولات استهلكت السلسلة 1012 ثانية ثم فشلت.
+    try:
+        per_model_retries = max(1, int(os.environ.get("GEMINI_RETRIES", "2")))
+    except ValueError:
+        per_model_retries = 2
+
+    queue = list(models)
+    tried: list[str] = []
     last_error = ""
-    for i, model in enumerate(models):
+
+    while queue:
+        model = queue.pop(0)
+        if model in tried:
+            continue
+        tried.append(model)
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         try:
-            data = _post_json(url, payload, headers)
+            _hook("gemini")          # يُحسب هذا الطلب قبل إرساله
+            data = _post_json(url, payload, headers, max_retries=per_model_retries)
         except SystemExit as exc:
             msg = str(exc)
             # مشكلة مفتاح/تصريح حقيقية -- ستفشل بنفس الشكل على كل موديل، لا فائدة من المحاولة أكثر
             if "api key" in msg.lower() or "401" in msg[:60]:
                 raise
             last_error = msg
-            log(f"    الموديل '{model}' فشل -- محاولة الموديل التالي في السلسلة...")
+
+            # عند تقاعد موديل، جوجل تُرجع 404 وتسمّي البديل صراحةً في نص الخطأ:
+            # "This model ... is no longer available. Please update your code to
+            #  use models/X". فنتبع البديل فورًا بدل انتظار تحديث يدوي للقائمة.
+            hint = _RETIRED_REPLACEMENT.search(msg)
+            if hint and hint.group(1) not in tried:
+                repl = hint.group(1)
+                queue.insert(0, repl)
+                log(f"    '{model}' متقاعد -- الخدمة تقترح '{repl}'، أجرّبه فورًا")
+            else:
+                log(f"    الموديل '{model}' فشل -- التالي في السلسلة...")
             continue
 
         try:
@@ -419,16 +492,20 @@ def transcribe_gemini(path: Path, speakers: int, tail: str, hints: str) -> list[
             text = "".join(p.get("text", "") for p in parts)
         except (KeyError, IndexError):
             last_error = json.dumps(data)[:500]
-            log(f"    مخرج غير متوقع من '{model}' -- محاولة الموديل التالي في السلسلة...")
+            log(f"    مخرج غير متوقع من '{model}' -- التالي في السلسلة...")
             continue
 
-        if i > 0:
-            log(f"    نجح عبر الموديل '{model}' (بعد سقوط {i} من السلسلة)")
+        if len(tried) > 1:
+            log(f"    نجح عبر الموديل '{model}' (بعد سقوط {len(tried)-1})")
         return parse_timestamped(text)
 
-    die(f"كل موديلات Gemini في السلسلة فشلت. آخر خطأ:\n{last_error[:800]}"
-        f"\nالسلسلة المستخدمة: {models}\n"
-        "خصّصها عبر متغيّر البيئة GEMINI_MODELS (بفاصلة) لو تحتاج موديلات مختلفة.")
+    busy = "503" in last_error or "429" in last_error or "overloaded" in last_error.lower()
+    die(f"كل موديلات Gemini فشلت. آخر خطأ:\n{last_error[:800]}"
+        f"\nالموديلات المُجرَّبة بالترتيب: {tried}\n"
+        + ("الأخطاء من نوع ازدحام (503/429) لا عيب في المفتاح ولا في الكود:"
+           " الخدمة كانت مشغولة فعلًا. أعد المحاولة لاحقًا، أو استخدم"
+           " --provider groq الآن.\n" if busy else
+           "خصّصها عبر متغيّر البيئة GEMINI_MODELS (بفاصلة).\n"))
     return []
 
 
@@ -446,6 +523,7 @@ def transcribe_groq(path: Path, speakers: int, tail: str, hints: str) -> list[Li
     prompt = "تسجيل بالعامية المصرية. " + (hints.strip() or "")
 
     for attempt in range(5):
+        _hook("groq")
         with path.open("rb") as fh:
             r = requests.post(
                 "https://api.groq.com/openai/v1/audio/transcriptions",
@@ -605,8 +683,226 @@ def transcribe_qwencleo(path: Path, speakers: int, tail: str, hints: str) -> lis
     return lines
 
 
+def _draft_block(drafts: dict[str, list[Line]]) -> str:
+    """يرتّب مسودات المحركات نصًا مرقّمًا ليقرأها المُصالِح."""
+    out = []
+    for i, (name, lines) in enumerate(drafts.items(), 1):
+        body = "\n".join(
+            f"[{fmt_ts(l.start)}] {(l.speaker + ': ') if l.speaker else ''}{l.text}"
+            for l in lines
+        )
+        out.append(f"### مسودة {i} (محرك: {name})\n{body}")
+    return "\n\n".join(out)
+
+
+def _draft_texts(drafts: dict[str, list[Line]]) -> dict[str, str]:
+    return {n: " ".join(l.text for l in lines) for n, lines in drafts.items()}
+
+
+def _agreement(drafts: dict[str, list[Line]]) -> float:
+    """
+    متوسط التشابه على **كل** أزواج المسودات، لا على أول اثنتين.
+
+    مراجعة مستقلة نبّهت أن قصر المقياس على أول مسودتين يُهمل المحرك الثالث
+    فما فوق ويجعل الرقم يعتمد على ترتيب التشغيل. المتوسط على كل الأزواج
+    يستخدم كل ما لدينا ولا يتغيّر بالترتيب.
+    """
+    if len(drafts) < 2:
+        return 0.0
+    try:
+        from arabic import similarity
+    except ImportError:
+        return 0.0
+    texts = _draft_texts(drafts)
+    names = list(texts)
+    sims = [similarity(texts[names[i]], texts[names[j]])
+            for i in range(len(names)) for j in range(i + 1, len(names))]
+    return sum(sims) / len(sims) if sims else 0.0
+
+
+def _pick_best_draft(drafts: dict[str, list[Line]]) -> tuple[str, list[Line]]:
+    """
+    يختار المسودة **الأقرب إلى بقية المسودات** (medoid) -- لا الأطول.
+
+    الاحتياطي السابق كان يأخذ أكثر المسودات كلمات، وهذا ضرر فعّال لا مجرد
+    ضعف: في مخرَج حقيقي هلوس Groq بـ «مرحباً. مرحباً. مرحباً. يا عبد البر.
+    هل حياتك جميلة؟» (٩ كلمات) مقابل «ألو ألو» الصحيحة (كلمتان) -- فكان
+    الاحتياطي يختار الهلوسة بعينها، في اللحظة التي يُفترض أن يحمي فيها.
+
+    الهلوسة منفردة بطبعها: لا تجد ما يعضدها في مسودة أخرى. فالمسودة الأعلى
+    اتفاقًا مع البقية هي الأرجح صحةً، والطول ليس دليلًا على شيء.
+    """
+    names = list(drafts)
+    if len(names) == 1:
+        return names[0], drafts[names[0]]
+    try:
+        from arabic import similarity
+    except ImportError:
+        # بلا مقياس، الأقصر أأمن من الأطول: الهلوسة تُضيف كلامًا ولا تحذفه
+        pick = min(names, key=lambda n: sum(len(l.text.split())
+                                            for l in drafts[n]))
+        return pick, drafts[pick]
+
+    texts = _draft_texts(drafts)
+    scores: dict[str, float] = {}
+    for n in names:
+        others = [m for m in names if m != n]
+        scores[n] = sum(similarity(texts[n], texts[m]) for m in others) / len(others)
+    pick = max(names, key=lambda n: (scores[n], -sum(len(l.text.split())
+                                                     for l in drafts[n])))
+    detail = ", ".join(f"{n}={scores[n]:.0%}" for n in names)
+    log(f"    اختيار بالتوافق (لا بالطول): {detail} -> '{pick}'")
+    return pick, drafts[pick]
+
+
+def _reconcile(path: Path, drafts: dict[str, list[Line]], speakers: int,
+               hints: str) -> list[Line]:
+    """
+    يعطي مُصالِحًا الصوتَ **مع** كل المسودات، ويطلب نصًا واحدًا نهائيًا.
+
+    هذا ما يقتل الهلوسة: كلمة اختلقها محرك واحد لا تجد ما يعضدها في المسودات
+    الأخرى ولا في الصوت، فتُحذف أو تُعلَّم. مخرَج حقيقي من Groq بدأ بـ
+    «مرحباً. مرحباً. يا عبد البر» ولم يكن في الصوت شيء من ذلك -- التقاطع
+    يسقطه بدل أن يُسلّمه للمالك.
+    """
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        die("المصالحة تحتاج GEMINI_API_KEY. أو اضبط CONSENSUS_RECONCILER=none"
+            " لتأخذ أفضل مسودة بلا مصالحة.")
+
+    prompt = "\n".join([
+        "أمامك تسجيل صوتي بالعامية المصرية، ومعه عدة مسودات تفريغ أنتجتها",
+        "محركات مستقلة. مهمتك إنتاج **نص واحد نهائي** أدقّ منها كلها.",
+        "",
+        "اسمع الصوت بنفسك، ثم:",
+        "- ما اتفقت عليه المسودات: أثبته كما هو.",
+        "- ما اختلفت فيه: احكم بالصوت واختر ما سمعته فعلًا.",
+        "- ما لم تسمعه بوضوح ولم تتفق عليه المسودات: اكتب [غير واضح].",
+        "- كلمة موجودة في مسودة واحدة فقط ولا تسمعها في الصوت: **احذفها**."
+        " المحركات تهلوس، خصوصًا في أول التسجيل وعند الضجيج.",
+        "- لا تخترع كلامًا ليس في الصوت ولا في أي مسودة.",
+        "",
+        "قواعد اللغة إلزامية:",
+        "- العامية المصرية كما نُطقت حرفيًا. لا تفصيح، لا تصحيح نحوي،",
+        "  لا إعادة صياغة، لا تلخيص.",
+        "- إحدى المسودات قد تكون «فصّحت» الكلام -- لا تتبعها في ذلك،",
+        "  أعِد الكلام لعاميّته كما تسمعه.",
+        "- الأرقام بالحروف كما نُطقت.",
+        "",
+        "صيغة المخرج -- سطر لكل جملة، ولا شيء غيرها:",
+    ])
+    if speakers and speakers > 1:
+        prompt += ("\n[mm:ss] متحدث ١: النص\n[mm:ss] متحدث ٢: النص"
+                   f"\n\nالتسجيل مكالمة فيها {speakers} متحدثين تقريبًا.")
+    else:
+        prompt += "\n[mm:ss] النص"
+    if hints.strip():
+        prompt += ("\n\nأسماء ومصطلحات تُكتب بهذا الرسم بالضبط:\n" + hints.strip())
+    prompt += "\n\n## المسودات\n\n" + _draft_block(drafts)
+
+    model = os.environ.get("CONSENSUS_MODEL", "").strip()
+    models = [model] if model else _gemini_model_cascade()
+    audio_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+    payload = {
+        "contents": [{"parts": [
+            {"text": prompt},
+            {"inline_data": {"mime_type": "audio/ogg", "data": audio_b64}},
+        ]}],
+        "generationConfig": {"temperature": 0.0, "maxOutputTokens": 65536,
+                             "thinkingConfig": {"thinkingBudget": 0}},
+    }
+    headers = {"x-goog-api-key": key, "Content-Type": "application/json"}
+
+    for m in models:
+        try:
+            _hook("gemini")          # المصالحة طلب إضافي، ويجب أن يُحسب
+            data = _post_json(
+                f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent",
+                payload, headers, max_retries=2)
+        except SystemExit as exc:
+            if "api key" in str(exc).lower():
+                raise
+            log(f"    المُصالِح '{m}' فشل -- التالي...")
+            continue
+        try:
+            parts = data["candidates"][0]["content"]["parts"]
+            text = "".join(p.get("text", "") for p in parts)
+        except (KeyError, IndexError):
+            continue
+        merged = parse_timestamped(text)
+        if merged:
+            return merged
+    return []
+
+
+def transcribe_consensus(path: Path, speakers: int, tail: str,
+                         hints: str) -> list[Line]:
+    """
+    تقاطع محركات: عدة موديلات تفرّغ نفس المقطع، ثم تتصالح على نص واحد.
+
+    لماذا هذا أدق من أي محرك منفردًا: الأخطاء المستقلة لا تتكرر بنفس الشكل.
+    ما يتفق عليه محركان مختلفان يكاد يكون صحيحًا، وما ينفرد به أحدهما مرشّح
+    قوي لأن يكون هلوسة. فالاتفاق دليل، والاختلاف موضع فحص بالصوت.
+
+    الضبط:
+        CONSENSUS_ENGINES     افتراضي "gemini,groq"
+        CONSENSUS_RECONCILER  "llm" (افتراضي) أو "none" لأخذ أفضل مسودة
+        CONSENSUS_MODEL       موديل المصالحة، افتراضي سلسلة Gemini
+    """
+    names = [e.strip() for e in
+             os.environ.get("CONSENSUS_ENGINES", "gemini,groq").split(",")
+             if e.strip()]
+    names = [n for n in names if n != "consensus"]      # لا استدعاء ذاتي
+    unknown = [n for n in names if n not in PROVIDERS]
+    if unknown:
+        die(f"محركات غير معروفة في CONSENSUS_ENGINES: {unknown}")
+    if len(names) < 2:
+        die("التقاطع يحتاج محركين على الأقل في CONSENSUS_ENGINES.")
+
+    drafts: dict[str, list[Line]] = {}
+    for name in names:
+        log(f"    تقاطع: تشغيل '{name}'...")
+        try:
+            lines = PROVIDERS[name](path, speakers, tail, hints)
+        except SystemExit as exc:
+            log(f"      '{name}' فشل: {str(exc)[:160]} -- نكمل بالباقي")
+            continue
+        except Exception as exc:
+            log(f"      '{name}' فشل: {type(exc).__name__} -- نكمل بالباقي")
+            continue
+        if lines:
+            drafts[name] = lines
+            log(f"      '{name}': {sum(len(l.text.split()) for l in lines)} كلمة")
+
+    if not drafts:
+        die("كل محركات التقاطع فشلت.")
+    if len(drafts) == 1:
+        only = next(iter(drafts))
+        log(f"    نجح محرك واحد فقط ('{only}') -- لا تقاطع، أرجعه كما هو")
+        return drafts[only]
+
+    agree = _agreement(drafts)
+    log(f"    متوسط الاتفاق على كل الأزواج: {agree:.0%}"
+        + ("  (اتفاق منخفض -- الصوت صعب أو أحد المحركين يهلوس)"
+           if agree < 0.6 else ""))
+
+    if os.environ.get("CONSENSUS_RECONCILER", "llm").strip().lower() == "none":
+        name, lines = _pick_best_draft(drafts)
+        log(f"    بلا مصالحة -- المسودة الأعلى توافقًا ('{name}')")
+        return lines
+
+    merged = _reconcile(path, drafts, speakers, hints)
+    if not merged:
+        name, lines = _pick_best_draft(drafts)
+        log(f"    المصالحة فشلت -- رجعت للأعلى توافقًا ('{name}')")
+        return lines
+    log(f"    مصالحة: {sum(len(l.text.split()) for l in merged)} كلمة نهائية")
+    return merged
+
+
 PROVIDERS = {
-    "qwencleo": transcribe_qwencleo,     # الأدق للمصري بين المفتوحات -- مجاني
+    "consensus": transcribe_consensus,    # تقاطع محركات -- الأدق، وأغلى في الطلبات
+    "qwencleo": transcribe_qwencleo,      # الأدق للمصري بين المفتوحات -- مجاني
     "gemini": transcribe_gemini,
     "groq": transcribe_groq,
     "elevenlabs": transcribe_elevenlabs,  # الأدق المقاس مستقلًا -- مدفوع
@@ -675,11 +971,27 @@ def write_outputs(lines: list[Line], meta: dict, out_dir: Path, stem: str) -> di
     written["srt"] = srt
 
     # --- بيانات منظمة للبحث والتحليل لاحقًا
+    #
+    # كل سطر يحمل النص الخام كما نُطق، **و** صورة مطبّعة بجانبه.
+    # الخام للعرض ولا يُمسّ (عاميّة المالك هي المُنتَج). المطبّع للبحث
+    # والمطابقة: بدونه «إزاي» لا تجد «ازاي» ويفشل البحث بصمت.
+    try:
+        from arabic import normalize as _norm
+    except ImportError:
+        # لا نُسقط التفريغ لغياب وحدة، لكن الصمت هنا خطر: الحقل سيصير مطابقًا
+        # للخام فيظن القارئ أن التطبيع يعمل والبحث سيفشل بصمت. فنُعلن.
+        log("    تنبيه: arabic.py غير موجود -- التطبيع معطّل،"
+            " وحقل normalized سيطابق النص الخام. البحث سيفشل على اختلاف الرسم.")
+
+        def _norm(t: str) -> str:
+            return t
+
     js = out_dir / f"{stem}.json"
     js.write_text(
         json.dumps(
             {"meta": meta,
-             "lines": [{"start": l.start, "speaker": l.speaker, "text": l.text}
+             "lines": [{"start": l.start, "speaker": l.speaker,
+                        "text": l.text, "normalized": _norm(l.text)}
                        for l in lines]},
             ensure_ascii=False, indent=2,
         ),

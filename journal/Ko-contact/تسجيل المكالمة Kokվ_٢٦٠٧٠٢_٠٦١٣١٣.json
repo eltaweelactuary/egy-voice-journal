@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٧٠٢_٠٦١٣١٣",
+    "date": "2026-09-17 22:05",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٧٠٢_٠٦١٣١٣.m4a",
+    "duration": 57.925625,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 5,
+    "words": 6
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحلو",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 3.0,
+      "speaker": null,
+      "text": "مرحلو",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 10.0,
+      "speaker": null,
+      "text": "مرحلو",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 13.0,
+      "speaker": null,
+      "text": "نحن نسجل.",
+      "normalized": "نحن نسجل"
+    },
+    {
+      "start": 43.0,
+      "speaker": null,
+      "text": "شكيب.",
+      "normalized": "شكيب"
+    }
+  ]
+}

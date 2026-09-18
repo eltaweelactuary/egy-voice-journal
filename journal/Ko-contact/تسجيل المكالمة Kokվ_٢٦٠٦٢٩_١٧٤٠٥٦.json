@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٩_١٧٤٠٥٦",
+    "date": "2026-09-17 22:03",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٩_١٧٤٠٥٦.m4a",
+    "duration": 53.915,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 7,
+    "words": 37
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "ايوه يا كوكو. ايه يا حمد. اه حكيلي.",
+      "normalized": "ايوه يا كوكو ايه يا حمد اه حكيلي"
+    },
+    {
+      "start": 15.24,
+      "speaker": null,
+      "text": "تعمل ايه?",
+      "normalized": "تعمل ايه"
+    },
+    {
+      "start": 19.0,
+      "speaker": null,
+      "text": "انا لحنك. تعمل ايه?",
+      "normalized": "انا لحنك تعمل ايه"
+    },
+    {
+      "start": 28.84,
+      "speaker": null,
+      "text": "حتى ايدي. علي صوتك يا ماما ده صوتك بقى اوضح.",
+      "normalized": "حتي ايدي علي صوتك يا ماما ده صوتك بقي اوضح"
+    },
+    {
+      "start": 36.88,
+      "speaker": null,
+      "text": "الشبكة عندك صيئة جدا. الشبكة تبت تصل برضو بزيرة عشرة?",
+      "normalized": "الشبكه عندك صييه جدا الشبكه تبت تصل برضو بزيره عشره"
+    },
+    {
+      "start": 45.36,
+      "speaker": null,
+      "text": "نعم. نعم.",
+      "normalized": "نعم نعم"
+    },
+    {
+      "start": 48.94,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    }
+  ]
+}

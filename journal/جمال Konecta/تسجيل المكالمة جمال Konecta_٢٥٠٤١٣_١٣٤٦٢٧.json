@@ -1,0 +1,560 @@
+{
+  "meta": {
+    "title": "جمال Konecta — تسجيل المكالمة جمال Konecta_٢٥٠٤١٣_١٣٤٦٢٧",
+    "date": "2026-09-18 21:43",
+    "source": "تسجيل المكالمة جمال Konecta_٢٥٠٤١٣_١٣٤٦٢٧.m4a",
+    "duration": 365.120813,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 91,
+    "words": 745
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": "متحدث ١",
+      "text": "السلام عليكم.",
+      "normalized": "السلام عليكم"
+    },
+    {
+      "start": 1.0,
+      "speaker": "متحدث ٢",
+      "text": "عليك السلام.",
+      "normalized": "عليك السلام"
+    },
+    {
+      "start": 3.0,
+      "speaker": "متحدث ١",
+      "text": "الحتة بتاعة Search engine OCR قلت لي إيه؟",
+      "normalized": "الحته بتاعه search engine ocr قلت لي ايه"
+    },
+    {
+      "start": 6.0,
+      "speaker": "متحدث ١",
+      "text": "الحتة بتاعة Search engine OCR failed to process or extract meaningful content from the text in the uploaded image دي إيه؟",
+      "normalized": "الحته بتاعه search engine ocr failed to process or extract meaningful content from the text in the uploaded image دي ايه"
+    },
+    {
+      "start": 16.0,
+      "speaker": "متحدث ٢",
+      "text": "معليش استنى قول لي تاني كده؟ ولا أقرأها من على الميل اللي أنا بعته؟",
+      "normalized": "معليش استني قول لي تاني كده ولا اقراها من علي الميل اللي انا بعته"
+    },
+    {
+      "start": 20.0,
+      "speaker": "متحدث ١",
+      "text": "اه في السطر كدة مكتوب فيه Search engine OCR failed to process or extract meaningful content",
+      "normalized": "اه في السطر كده مكتوب فيه search engine ocr failed to process or extract meaningful content"
+    },
+    {
+      "start": 28.0,
+      "speaker": "متحدث ٢",
+      "text": "ما هي دي الفكرة، هي دي الفكرة اللي هي بتاعة الصورة اللي إحنا مش مش عارفين نشوفها.",
+      "normalized": "ما هي دي الفكره هي دي الفكره اللي هي بتاعه الصوره اللي احنا مش مش عارفين نشوفها"
+    },
+    {
+      "start": 35.0,
+      "speaker": "متحدث ١",
+      "text": "هي أصلًا لوحدها Unclear OCR behavior.",
+      "normalized": "هي اصلا لوحدها unclear ocr behavior"
+    },
+    {
+      "start": 38.0,
+      "speaker": "متحدث ٢",
+      "text": "يعني أنت فاهم قصدي اللي هو كلمة الإيه؟",
+      "normalized": "يعني انت فاهم قصدي اللي هو كلمه الايه"
+    },
+    {
+      "start": 43.0,
+      "speaker": "متحدث ٢",
+      "text": "ال ال",
+      "normalized": "ال ال"
+    },
+    {
+      "start": 45.0,
+      "speaker": "متحدث ٢",
+      "text": "الـ OCR مش عارفين نشوف الجزئية دي، بس هو إيه يعني لما أنا حطيت بقى دلوقتي",
+      "normalized": "ال ocr مش عارفين نشوف الجزييه دي بس هو ايه يعني لما انا حطيت بقي دلوقتي"
+    },
+    {
+      "start": 51.0,
+      "speaker": "متحدث ٢",
+      "text": "شوية حاجات",
+      "normalized": "شويه حاجات"
+    },
+    {
+      "start": 53.0,
+      "speaker": "متحدث ٢",
+      "text": "مش هينفع بقى نقول له كده، نقول له بقى إحنا البيفيور يعني هو بيشوف شوية حاجات وفي فايل مش شايفه، فإحنا احتارنا.",
+      "normalized": "مش هينفع بقي نقول له كده نقول له بقي احنا البيفيور يعني هو بيشوف شويه حاجات وفي فايل مش شايفه فاحنا احتارنا"
+    },
+    {
+      "start": 61.0,
+      "speaker": "متحدث ١",
+      "text": "ماشي، بيبقى خايف الـ Behavior بس يعني.",
+      "normalized": "ماشي بيبقي خايف ال behavior بس يعني"
+    },
+    {
+      "start": 63.0,
+      "speaker": "متحدث ٢",
+      "text": "ده أبدیت للحتة ديا إن مش هتبقى كده، هتبقى اللي هو إيه إحنا في حاجات رفعناها واشتغل، وفي حاجات رفعناها وما اشتغلتش، فإحنا مش فاهمين، فتعالوا فهمونا عشان خاطر إحنا مش",
+      "normalized": "ده ابديت للحته ديا ان مش هتبقي كده هتبقي اللي هو ايه احنا في حاجات رفعناها واشتغل وفي حاجات رفعناها وما اشتغلتش فاحنا مش فاهمين فتعالوا فهمونا عشان خاطر احنا مش"
+    },
+    {
+      "start": 74.0,
+      "speaker": "متحدث ٢",
+      "text": "مش عارفين نعمل فرذر إيه؟ Investigation.",
+      "normalized": "مش عارفين نعمل فرذر ايه investigation"
+    },
+    {
+      "start": 77.0,
+      "speaker": "متحدث ٢",
+      "text": "مش عارفين نعمل فرذر إيه؟ Investigation، غير لما أنتو تحطوا لنا هاي لايتس للـ يعني ليه ده حصل؟",
+      "normalized": "مش عارفين نعمل فرذر ايه investigation غير لما انتو تحطوا لنا هاي لايتس لل يعني ليه ده حصل"
+    },
+    {
+      "start": 84.0,
+      "speaker": "متحدث ٢",
+      "text": "هل بسبب الامتداد بتاع الصورة ديا؟",
+      "normalized": "هل بسبب الامتداد بتاع الصوره ديا"
+    },
+    {
+      "start": 88.0,
+      "speaker": "متحدث ٢",
+      "text": "طب ولو الامتداد ما حطش الـ حاطين الرمز بتاع الـ OCR جنبهم ليه؟",
+      "normalized": "طب ولو الامتداد ما حطش ال حاطين الرمز بتاع ال ocr جنبهم ليه"
+    },
+    {
+      "start": 93.0,
+      "speaker": "متحدث ٢",
+      "text": "فإحنا مش يعني We need your support يعني.",
+      "normalized": "فاحنا مش يعني we need your support يعني"
+    },
+    {
+      "start": 100.0,
+      "speaker": "متحدث ٢",
+      "text": "بس مش هينفع نحطها نفسها كده.",
+      "normalized": "بس مش هينفع نحطها نفسها كده"
+    },
+    {
+      "start": 103.0,
+      "speaker": "متحدث ١",
+      "text": "ماشي، هيبقى",
+      "normalized": "ماشي هيبقي"
+    },
+    {
+      "start": 105.0,
+      "speaker": "متحدث ١",
+      "text": "مش كده هتحط إن هو إيه؟",
+      "normalized": "مش كده هتحط ان هو ايه"
+    },
+    {
+      "start": 109.0,
+      "speaker": "متحدث ١",
+      "text": "هو المفروض يشتغل على السيمانتك ويشتغل في الـ Terminology؟",
+      "normalized": "هو المفروض يشتغل علي السيمانتك ويشتغل في ال terminology"
+    },
+    {
+      "start": 113.0,
+      "speaker": "متحدث ٢",
+      "text": "لا، ما هو ما حطلناش ال ال العلامة بتاعة السيمانتك فإحنا عشان كده حنسأله إمتى بقى المفترض إيه يبقى في يعني هل في ميثودولوجي معينة ال ال ال إكسپلورر فايل بيمشي عليها؟",
+      "normalized": "لا ما هو ما حطلناش ال ال العلامه بتاعه السيمانتك فاحنا عشان كده حنساله امتي بقي المفترض ايه يبقي في يعني هل في ميثودولوجي معينه ال ال ال اكسپلورر فايل بيمشي عليها"
+    },
+    {
+      "start": 125.0,
+      "speaker": "متحدث ٢",
+      "text": "علشان يحولها",
+      "normalized": "علشان يحولها"
+    },
+    {
+      "start": 127.0,
+      "speaker": "متحدث ٢",
+      "text": "من الـ Terminology للـ Semantics؟",
+      "normalized": "من ال terminology لل semantics"
+    },
+    {
+      "start": 131.0,
+      "speaker": "متحدث ٢",
+      "text": "ليه؟ لأن إحنا حطينا الملفات دي بقى لها كذا يوم وما ترا وما تحولتِش.",
+      "normalized": "ليه لان احنا حطينا الملفات دي بقي لها كذا يوم وما ترا وما تحولتش"
+    },
+    {
+      "start": 136.0,
+      "speaker": "متحدث ٢",
+      "text": "فإحنا لو تفهمونا برضه كده معاكو إيه يعني إمتى؟ أو إيه إيه الحيثية؟ اللي هو بيتحول من هنا لهنا؟",
+      "normalized": "فاحنا لو تفهمونا برضه كده معاكو ايه يعني امتي او ايه ايه الحيثيه اللي هو بيتحول من هنا لهنا"
+    },
+    {
+      "start": 144.0,
+      "speaker": "متحدث ٢",
+      "text": "عشان برضه نبقى عاملين حسابنا لما نيجي نتست حاجة، ما نبقاش قاعدين مستنيين",
+      "normalized": "عشان برضه نبقي عاملين حسابنا لما نيجي نتست حاجه ما نبقاش قاعدين مستنيين"
+    },
+    {
+      "start": 148.0,
+      "speaker": "متحدث ٢",
+      "text": "كل شوية نقعد نخش ومِش عارف إيه وهي أصلًا قدامها أسبوع مثلًا.",
+      "normalized": "كل شويه نقعد نخش ومش عارف ايه وهي اصلا قدامها اسبوع مثلا"
+    },
+    {
+      "start": 152.0,
+      "speaker": "متحدث ٢",
+      "text": "وأنتم لو عندكم معلومة علموهالنا.",
+      "normalized": "وانتم لو عندكم معلومه علموهالنا"
+    },
+    {
+      "start": 154.0,
+      "speaker": "متحدث ١",
+      "text": "طيب، أنا هقول له OCR processing",
+      "normalized": "طيب انا هقول له ocr processing"
+    },
+    {
+      "start": 158.0,
+      "speaker": "متحدث ١",
+      "text": "in search engine sometimes",
+      "normalized": "in search engine sometimes"
+    },
+    {
+      "start": 161.0,
+      "speaker": "متحدث ١",
+      "text": "succeed,",
+      "normalized": "succeed"
+    },
+    {
+      "start": 162.0,
+      "speaker": "متحدث ١",
+      "text": "sometimes",
+      "normalized": "sometimes"
+    },
+    {
+      "start": 165.0,
+      "speaker": "متحدث ٢",
+      "text": "الـ الكرو ال ال كمان ال ال",
+      "normalized": "ال الكرو ال ال كمان ال ال"
+    },
+    {
+      "start": 170.0,
+      "speaker": "متحدث ٢",
+      "text": "البحث المصطلحي.",
+      "normalized": "البحث المصطلحي"
+    },
+    {
+      "start": 172.0,
+      "speaker": "متحدث ١",
+      "text": "ماله؟",
+      "normalized": "ماله"
+    },
+    {
+      "start": 173.0,
+      "speaker": "متحدث ٢",
+      "text": "هو ده اللي مش شغال، ما هو دي دي كمان دي المشكلة الإضافية.",
+      "normalized": "هو ده اللي مش شغال ما هو دي دي كمان دي المشكله الاضافيه"
+    },
+    {
+      "start": 182.0,
+      "speaker": "متحدث ١",
+      "text": "إيه؟ يعني إيه مش فاهم؟",
+      "normalized": "ايه يعني ايه مش فاهم"
+    },
+    {
+      "start": 185.0,
+      "speaker": "متحدث ٢",
+      "text": "أنت بتقول البحث بشكل عام.",
+      "normalized": "انت بتقول البحث بشكل عام"
+    },
+    {
+      "start": 189.0,
+      "speaker": "متحدث ١",
+      "text": "ماشي، ما أنا هقولها له إزاي طيب؟ ما أنت في ساعات الـ OCR ده الفايلز هو قاريها.",
+      "normalized": "ماشي ما انا هقولها له ازاي طيب ما انت في ساعات ال ocr ده الفايلز هو قاريها"
+    },
+    {
+      "start": 195.0,
+      "speaker": "متحدث ١",
+      "text": "يعني كتبت له كلمة \"توظيف\" في الصورة اللي بعتهالي، قاريها.",
+      "normalized": "يعني كتبت له كلمه توظيف في الصوره اللي بعتهالي قاريها"
+    },
+    {
+      "start": 199.0,
+      "speaker": "متحدث ٢",
+      "text": "أمم.",
+      "normalized": "امم"
+    },
+    {
+      "start": 200.0,
+      "speaker": "متحدث ١",
+      "text": "فهو شايف كلمة توظيف دي في الصور دي، صح؟",
+      "normalized": "فهو شايف كلمه توظيف دي في الصور دي صح"
+    },
+    {
+      "start": 205.0,
+      "speaker": "متحدث ٢",
+      "text": "أنت أنت صوتك بي إيه؟",
+      "normalized": "انت انت صوتك بي ايه"
+    },
+    {
+      "start": 207.0,
+      "speaker": "متحدث ٢",
+      "text": "بيروح وييجي.",
+      "normalized": "بيروح وييجي"
+    },
+    {
+      "start": 208.0,
+      "speaker": "متحدث ١",
+      "text": "بس كدة أنت حاطط كلمة توظيف كاتبها فوق في السيرش.",
+      "normalized": "بس كده انت حاطط كلمه توظيف كاتبها فوق في السيرش"
+    },
+    {
+      "start": 212.0,
+      "speaker": "متحدث ٢",
+      "text": "تمام تمام.",
+      "normalized": "تمام تمام"
+    },
+    {
+      "start": 214.0,
+      "speaker": "متحدث ١",
+      "text": "فظاهر إن هو جابها من الملفات دي اللي مكتوب جنبها OCR، كده هو شغال.",
+      "normalized": "فظاهر ان هو جابها من الملفات دي اللي مكتوب جنبها ocr كده هو شغال"
+    },
+    {
+      "start": 218.0,
+      "speaker": "متحدث ٢",
+      "text": "ماشي ماشي، شغال، بس إحنا دلوقتي عايزين نفهم ال ال بعض الفايلات ما بي ما بيشوفهاش مع إن هي محطوط لها",
+      "normalized": "ماشي ماشي شغال بس احنا دلوقتي عايزين نفهم ال ال بعض الفايلات ما بي ما بيشوفهاش مع ان هي محطوط لها"
+    },
+    {
+      "start": 226.0,
+      "speaker": "متحدث ١",
+      "text": "No, sometimes fails, you know sometimes succeed, and sometimes fails to process or extract meaningful content from the text",
+      "normalized": "no sometimes fails you know sometimes succeed and sometimes fails to process or extract meaningful content from the text"
+    },
+    {
+      "start": 233.0,
+      "speaker": "متحدث ١",
+      "text": "in uploaded image.",
+      "normalized": "in uploaded image"
+    },
+    {
+      "start": 235.0,
+      "speaker": "متحدث ١",
+      "text": "حلوة كده الصياغة دي؟",
+      "normalized": "حلوه كده الصياغه دي"
+    },
+    {
+      "start": 236.0,
+      "speaker": "متحدث ٢",
+      "text": "تمام تمام.",
+      "normalized": "تمام تمام"
+    },
+    {
+      "start": 238.0,
+      "speaker": "متحدث ٢",
+      "text": "إحنا كنا على فكرة كنا كاتبين صياغة تانية في ال في ال الصبح.",
+      "normalized": "احنا كنا علي فكره كنا كاتبين صياغه تانيه في ال في ال الصبح"
+    },
+    {
+      "start": 242.0,
+      "speaker": "متحدث ٢",
+      "text": "مش عارف أنت غيرتها ولا دي بد يعني إضافة؟",
+      "normalized": "مش عارف انت غيرتها ولا دي بد يعني اضافه"
+    },
+    {
+      "start": 247.0,
+      "speaker": "متحدث ١",
+      "text": "دي أنا بعـ",
+      "normalized": "دي انا بع"
+    },
+    {
+      "start": 248.0,
+      "speaker": "متحدث ١",
+      "text": "هو ما يتلغبطش يا حبيبي بـ أزود عليها بس.",
+      "normalized": "هو ما يتلغبطش يا حبيبي ب ازود عليها بس"
+    },
+    {
+      "start": 251.0,
+      "speaker": "متحدث ٢",
+      "text": "ماشي، أنا قصدي ما إحنا يعني هتبقى المعلومة متكررة لو أنت حط يعني ثبت الـ",
+      "normalized": "ماشي انا قصدي ما احنا يعني هتبقي المعلومه متكرره لو انت حط يعني ثبت ال"
+    },
+    {
+      "start": 254.0,
+      "speaker": "متحدث ١",
+      "text": "لا، أنا قسمتها له وخلاص، أنا قسمتها.",
+      "normalized": "لا انا قسمتها له وخلاص انا قسمتها"
+    },
+    {
+      "start": 257.0,
+      "speaker": "متحدث ٢",
+      "text": "تمام، تمام.",
+      "normalized": "تمام تمام"
+    },
+    {
+      "start": 258.0,
+      "speaker": "متحدث ١",
+      "text": "أنا قسمتها له كـ كتبتهاله تحت كل حتة كده، أنت أنت كاتب اللي أنت بعتهالي.",
+      "normalized": "انا قسمتها له ك كتبتهاله تحت كل حته كده انت انت كاتب اللي انت بعتهالي"
+    },
+    {
+      "start": 264.0,
+      "speaker": "متحدث ١",
+      "text": "إيه",
+      "normalized": "ايه"
+    },
+    {
+      "start": 265.0,
+      "speaker": "متحدث ١",
+      "text": "أنت الحتة الجزء الأولاني اللي أنت بتستوضح، أنت عايز إيه المطلوب؟",
+      "normalized": "انت الحته الجزء الاولاني اللي انت بتستوضح انت عايز ايه المطلوب"
+    },
+    {
+      "start": 270.0,
+      "speaker": "متحدث ٢",
+      "text": "أمم.",
+      "normalized": "امم"
+    },
+    {
+      "start": 271.0,
+      "speaker": "متحدث ١",
+      "text": "فإحنا أنا عديت الجزء ده، الجزء الثاني بقى اللي أنت إيه؟ Explain أا Large model أا عايز أكتب بتاعة Large دي.",
+      "normalized": "فاحنا انا عديت الجزء ده الجزء الثاني بقي اللي انت ايه explain اا large model اا عايز اكتب بتاعه large دي"
+    },
+    {
+      "start": 279.0,
+      "speaker": "متحدث ٢",
+      "text": "أمم.",
+      "normalized": "امم"
+    },
+    {
+      "start": 281.0,
+      "speaker": "متحدث ١",
+      "text": "Need to synchronize about the update وبعد كده",
+      "normalized": "need to synchronize about the update وبعد كده"
+    },
+    {
+      "start": 287.0,
+      "speaker": "متحدث ١",
+      "text": "Search behavior",
+      "normalized": "search behavior"
+    },
+    {
+      "start": 289.0,
+      "speaker": "متحدث ١",
+      "text": "Second point",
+      "normalized": "second point"
+    },
+    {
+      "start": 291.0,
+      "speaker": "متحدث ١",
+      "text": "Second point",
+      "normalized": "second point"
+    },
+    {
+      "start": 294.0,
+      "speaker": "متحدث ١",
+      "text": "Ah",
+      "normalized": "ah"
+    },
+    {
+      "start": 298.0,
+      "speaker": "متحدث ١",
+      "text": "More",
+      "normalized": "more"
+    },
+    {
+      "start": 299.0,
+      "speaker": "متحدث ١",
+      "text": "Information",
+      "normalized": "information"
+    },
+    {
+      "start": 301.0,
+      "speaker": "متحدث ١",
+      "text": "About",
+      "normalized": "about"
+    },
+    {
+      "start": 306.0,
+      "speaker": "متحدث ١",
+      "text": "Large model used",
+      "normalized": "large model used"
+    },
+    {
+      "start": 311.0,
+      "speaker": "متحدث ١",
+      "text": "Third point، Third point بقى قسمتها له.",
+      "normalized": "third point third point بقي قسمتها له"
+    },
+    {
+      "start": 316.0,
+      "speaker": "متحدث ١",
+      "text": "Third point",
+      "normalized": "third point"
+    },
+    {
+      "start": 320.0,
+      "speaker": "متحدث ١",
+      "text": "About",
+      "normalized": "about"
+    },
+    {
+      "start": 321.0,
+      "speaker": "متحدث ١",
+      "text": "Testing",
+      "normalized": "testing"
+    },
+    {
+      "start": 324.0,
+      "speaker": "متحدث ١",
+      "text": "قلت له بليز بقى، اللغة مش كويسة و [غير واضح] Unclear OCR behavior, unclear OCR processing",
+      "normalized": "قلت له بليز بقي اللغه مش كويسه و غير واضح unclear ocr behavior unclear ocr processing"
+    },
+    {
+      "start": 332.0,
+      "speaker": "متحدث ١",
+      "text": "أا System [غير واضح]",
+      "normalized": "اا system غير واضح"
+    },
+    {
+      "start": 336.0,
+      "speaker": "متحدث ١",
+      "text": "و Non-responsive",
+      "normalized": "و non responsive"
+    },
+    {
+      "start": 337.0,
+      "speaker": "متحدث ٢",
+      "text": "أنت أنت على فكرة صوتك يعني أنا بسمع فيه كلمة بتوقع كده كل سطر.",
+      "normalized": "انت انت علي فكره صوتك يعني انا بسمع فيه كلمه بتوقع كده كل سطر"
+    },
+    {
+      "start": 342.0,
+      "speaker": "متحدث ١",
+      "text": "طب، خلاص، تمام. هـ هبعت كده وحطك معايا وأنت لو في أي كومنتات ابقى قول لي.",
+      "normalized": "طب خلاص تمام ه هبعت كده وحطك معايا وانت لو في اي كومنتات ابقي قول لي"
+    },
+    {
+      "start": 347.0,
+      "speaker": "متحدث ٢",
+      "text": "ماشي، عايزني أبى أبص عليها بصة قبل ما تبعت؟ براحتك.",
+      "normalized": "ماشي عايزني ابي ابص عليها بصه قبل ما تبعت براحتك"
+    },
+    {
+      "start": 352.0,
+      "speaker": "متحدث ٢",
+      "text": "هتبعتها لي في الشات كده هعمل الموضوع ده قبل ما نبعت، لو عادي يعني هو نفس القصة خلاص.",
+      "normalized": "هتبعتها لي في الشات كده هعمل الموضوع ده قبل ما نبعت لو عادي يعني هو نفس القصه خلاص"
+    },
+    {
+      "start": 358.0,
+      "speaker": "متحدث ١",
+      "text": "هبعتها لك في الشات وبص عليها ياللا، ماشي.",
+      "normalized": "هبعتها لك في الشات وبص عليها ياللا ماشي"
+    },
+    {
+      "start": 361.0,
+      "speaker": "متحدث ٢",
+      "text": "أيوة بعتها إيه.",
+      "normalized": "ايوه بعتها ايه"
+    }
+  ]
+}

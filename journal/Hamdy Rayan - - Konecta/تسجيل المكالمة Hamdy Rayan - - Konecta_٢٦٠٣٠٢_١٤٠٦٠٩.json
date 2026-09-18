@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "title": "Hamdy Rayan - - Konecta — تسجيل المكالمة Hamdy Rayan - - Konecta_٢٦٠٣٠٢_١٤٠٦٠٩",
+    "date": "2026-09-17 14:22",
+    "source": "تسجيل المكالمة Hamdy Rayan - - Konecta_٢٦٠٣٠٢_١٤٠٦٠٩.m4a",
+    "duration": 19.3555,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 12,
+    "words": 34
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": "متحدث ١",
+      "text": "أنا ن- أنا أنا تحت، أنا في العربية.",
+      "normalized": "انا ن انا انا تحت انا في العربيه"
+    },
+    {
+      "start": 3.0,
+      "speaker": "متحدث ٢",
+      "text": "طيب أنا في الأسانسير.",
+      "normalized": "طيب انا في الاسانسير"
+    },
+    {
+      "start": 5.0,
+      "speaker": "متحدث ١",
+      "text": "بسرعة، جري.",
+      "normalized": "بسرعه جري"
+    },
+    {
+      "start": 7.0,
+      "speaker": "متحدث ٢",
+      "text": "حاضر، جري. [ضحك]",
+      "normalized": "حاضر جري ضحك"
+    },
+    {
+      "start": 9.0,
+      "speaker": "متحدث ١",
+      "text": "جري بجد.",
+      "normalized": "جري بجد"
+    },
+    {
+      "start": 10.0,
+      "speaker": "متحدث ٢",
+      "text": "جري، ما أنا م- أنا بجري.",
+      "normalized": "جري ما انا م انا بجري"
+    },
+    {
+      "start": 11.0,
+      "speaker": "متحدث ١",
+      "text": "يلا.",
+      "normalized": "يلا"
+    },
+    {
+      "start": 12.0,
+      "speaker": "متحدث ٢",
+      "text": "العربية نفس المكان؟",
+      "normalized": "العربيه نفس المكان"
+    },
+    {
+      "start": 13.0,
+      "speaker": "متحدث ١",
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 14.0,
+      "speaker": "متحدث ٢",
+      "text": "حاضر.",
+      "normalized": "حاضر"
+    },
+    {
+      "start": 15.0,
+      "speaker": "متحدث ١",
+      "text": "يلا، سلام.",
+      "normalized": "يلا سلام"
+    },
+    {
+      "start": 16.0,
+      "speaker": "متحدث ٢",
+      "text": "سلام.",
+      "normalized": "سلام"
+    }
+  ]
+}

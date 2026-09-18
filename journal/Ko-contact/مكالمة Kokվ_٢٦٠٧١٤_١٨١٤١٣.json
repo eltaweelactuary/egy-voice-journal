@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Ko-contact — مكالمة Kokվ_٢٦٠٧١٤_١٨١٤١٣",
+    "date": "2026-09-17 21:59",
+    "source": "مكالمة Kokվ_٢٦٠٧١٤_١٨١٤١٣.m4a",
+    "duration": 40.453875,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 3,
+    "words": 3
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "نش.",
+      "normalized": "نش"
+    },
+    {
+      "start": 34.0,
+      "speaker": null,
+      "text": "سراي.",
+      "normalized": "سراي"
+    }
+  ]
+}

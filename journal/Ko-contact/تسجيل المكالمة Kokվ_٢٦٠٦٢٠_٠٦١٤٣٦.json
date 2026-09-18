@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٠_٠٦١٤٣٦",
+    "date": "2026-09-17 22:19",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٠_٠٦١٤٣٦.m4a",
+    "duration": 158.596,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 11,
+    "words": 26
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "موسيقى",
+      "normalized": "موسيقي"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "لا عشتين.",
+      "normalized": "لا عشتين"
+    },
+    {
+      "start": 42.88,
+      "speaker": null,
+      "text": "صحتي?",
+      "normalized": "صحتي"
+    },
+    {
+      "start": 47.68,
+      "speaker": null,
+      "text": "اه",
+      "normalized": "اه"
+    },
+    {
+      "start": 54.68,
+      "speaker": null,
+      "text": "انتي فترة فكرة مبارح",
+      "normalized": "انتي فتره فكره مبارح"
+    },
+    {
+      "start": 60.18,
+      "speaker": null,
+      "text": "كل جد عادة قل لي عايزيني نام بقى",
+      "normalized": "كل جد عاده قل لي عايزيني نام بقي"
+    },
+    {
+      "start": 69.68,
+      "speaker": null,
+      "text": "نالك",
+      "normalized": "نالك"
+    },
+    {
+      "start": 104.29597,
+      "speaker": null,
+      "text": "نيوم.",
+      "normalized": "نيوم"
+    },
+    {
+      "start": 120.93597,
+      "speaker": null,
+      "text": "آه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 125.93597,
+      "speaker": null,
+      "text": "آه لنيمتيني.",
+      "normalized": "اه لنيمتيني"
+    },
+    {
+      "start": 129.93597,
+      "speaker": null,
+      "text": "ترجمة نانا ترجمة نانا",
+      "normalized": "ترجمه نانا ترجمه نانا"
+    }
+  ]
+}

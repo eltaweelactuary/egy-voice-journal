@@ -1,0 +1,434 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٠٥_٠٦٢٠١٩",
+    "date": "2026-09-17 22:46",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٠٥_٠٦٢٠١٩.m4a",
+    "duration": 850.553188,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 70,
+    "words": 190
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "أهلا.",
+      "normalized": "اهلا"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "نعم.",
+      "normalized": "نعم"
+    },
+    {
+      "start": 60.0,
+      "speaker": null,
+      "text": "مش كرى.",
+      "normalized": "مش كري"
+    },
+    {
+      "start": 63.0,
+      "speaker": null,
+      "text": "المتساكى.",
+      "normalized": "المتساكي"
+    },
+    {
+      "start": 64.0,
+      "speaker": null,
+      "text": "المتساكى.",
+      "normalized": "المتساكي"
+    },
+    {
+      "start": 72.0,
+      "speaker": null,
+      "text": "المتساكى.",
+      "normalized": "المتساكي"
+    },
+    {
+      "start": 76.0,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 77.0,
+      "speaker": null,
+      "text": "اوه.",
+      "normalized": "اوه"
+    },
+    {
+      "start": 78.0,
+      "speaker": null,
+      "text": "دعونا نقلم تينيش نايمي قلين.",
+      "normalized": "دعونا نقلم تينيش نايمي قلين"
+    },
+    {
+      "start": 86.0,
+      "speaker": null,
+      "text": "نشتغل طب قليل.",
+      "normalized": "نشتغل طب قليل"
+    },
+    {
+      "start": 90.0,
+      "speaker": null,
+      "text": "مرحاية المصرية المصرية.",
+      "normalized": "مرحايه المصريه المصريه"
+    },
+    {
+      "start": 120.0,
+      "speaker": null,
+      "text": "أم تفتني ما ينفتني من أول مدن اليومك.",
+      "normalized": "ام تفتني ما ينفتني من اول مدن اليومك"
+    },
+    {
+      "start": 129.0,
+      "speaker": null,
+      "text": "أم.",
+      "normalized": "ام"
+    },
+    {
+      "start": 132.0,
+      "speaker": null,
+      "text": "أنا بأمجلش نو.",
+      "normalized": "انا بامجلش نو"
+    },
+    {
+      "start": 137.0,
+      "speaker": null,
+      "text": "أمدى.",
+      "normalized": "امدي"
+    },
+    {
+      "start": 167.0,
+      "speaker": null,
+      "text": "المصرية المصرية.",
+      "normalized": "المصريه المصريه"
+    },
+    {
+      "start": 197.0,
+      "speaker": null,
+      "text": "سنعيني.",
+      "normalized": "سنعيني"
+    },
+    {
+      "start": 200.66,
+      "speaker": null,
+      "text": "سنعيني وسيما سوتي.",
+      "normalized": "سنعيني وسيما سوتي"
+    },
+    {
+      "start": 237.64,
+      "speaker": null,
+      "text": "طي. عايزة ان انا اتعلم محضونك?",
+      "normalized": "طي عايزه ان انا اتعلم محضونك"
+    },
+    {
+      "start": 247.64,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 249.64,
+      "speaker": null,
+      "text": "ماش سوى?",
+      "normalized": "ماش سوي"
+    },
+    {
+      "start": 253.64,
+      "speaker": null,
+      "text": "انا اقول لك اتعلم محضونك.",
+      "normalized": "انا اقول لك اتعلم محضونك"
+    },
+    {
+      "start": 257.64,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 261.64,
+      "speaker": null,
+      "text": "حكي لي ما انت بتحب الاحضان لي.",
+      "normalized": "حكي لي ما انت بتحب الاحضان لي"
+    },
+    {
+      "start": 279.6,
+      "speaker": null,
+      "text": "عشان ايه?",
+      "normalized": "عشان ايه"
+    },
+    {
+      "start": 290.1,
+      "speaker": null,
+      "text": "بتكون لمساء قلبك. اه.",
+      "normalized": "بتكون لمساء قلبك اه"
+    },
+    {
+      "start": 298.6,
+      "speaker": null,
+      "text": "ما بقى انا عايز اوصل لقلبك?",
+      "normalized": "ما بقي انا عايز اوصل لقلبك"
+    },
+    {
+      "start": 304.6,
+      "speaker": null,
+      "text": "يوثم.",
+      "normalized": "يوثم"
+    },
+    {
+      "start": 314.94,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 319.24,
+      "speaker": null,
+      "text": "بقى انا عايز اوصل لقلبك.",
+      "normalized": "بقي انا عايز اوصل لقلبك"
+    },
+    {
+      "start": 334.6,
+      "speaker": null,
+      "text": "مرأمرأة المصرية.",
+      "normalized": "مرامراه المصريه"
+    },
+    {
+      "start": 344.59998,
+      "speaker": null,
+      "text": "مرأة المصرية.",
+      "normalized": "مراه المصريه"
+    },
+    {
+      "start": 354.59998,
+      "speaker": null,
+      "text": "حكيلي حسب اي.",
+      "normalized": "حكيلي حسب اي"
+    },
+    {
+      "start": 378.97998,
+      "speaker": null,
+      "text": "او في صيغة ولا اي مو.",
+      "normalized": "او في صيغه ولا اي مو"
+    },
+    {
+      "start": 384.59998,
+      "speaker": null,
+      "text": "مرحبا بكم في هذا الفيديو.",
+      "normalized": "مرحبا بكم في هذا الفيديو"
+    },
+    {
+      "start": 450.28,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 457.78,
+      "speaker": null,
+      "text": "كأنك حاضرين في وسطك كده.",
+      "normalized": "كانك حاضرين في وسطك كده"
+    },
+    {
+      "start": 464.08,
+      "speaker": null,
+      "text": "انا كنت.",
+      "normalized": "انا كنت"
+    },
+    {
+      "start": 472.58,
+      "speaker": null,
+      "text": "كأنك حاضرين في وسطك كده صح?",
+      "normalized": "كانك حاضرين في وسطك كده صح"
+    },
+    {
+      "start": 480.28,
+      "speaker": null,
+      "text": "يم.",
+      "normalized": "يم"
+    },
+    {
+      "start": 493.4,
+      "speaker": null,
+      "text": "محلو.",
+      "normalized": "محلو"
+    },
+    {
+      "start": 510.28,
+      "speaker": null,
+      "text": "حكيلي بقى قولي لعمل ايه حبيبتي?",
+      "normalized": "حكيلي بقي قولي لعمل ايه حبيبتي"
+    },
+    {
+      "start": 524.04,
+      "speaker": null,
+      "text": "معلميني حضنة.",
+      "normalized": "معلميني حضنه"
+    },
+    {
+      "start": 540.28,
+      "speaker": null,
+      "text": "مرسجم.",
+      "normalized": "مرسجم"
+    },
+    {
+      "start": 570.28,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 574.08,
+      "speaker": null,
+      "text": "واسيك راند.",
+      "normalized": "واسيك راند"
+    },
+    {
+      "start": 577.78,
+      "speaker": null,
+      "text": "وحدنا ايدي.",
+      "normalized": "وحدنا ايدي"
+    },
+    {
+      "start": 581.78,
+      "speaker": null,
+      "text": "ليت كده. ورد لي برضو مرشوعة شبايب.",
+      "normalized": "ليت كده ورد لي برضو مرشوعه شبايب"
+    },
+    {
+      "start": 588.28,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 593.28,
+      "speaker": null,
+      "text": "اولي تيني كده حبيبتي.",
+      "normalized": "اولي تيني كده حبيبتي"
+    },
+    {
+      "start": 598.28,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 600.28,
+      "speaker": null,
+      "text": "ترجع لك.",
+      "normalized": "ترجع لك"
+    },
+    {
+      "start": 617.7,
+      "speaker": null,
+      "text": "اودي ليتين يحضنك ازاي.",
+      "normalized": "اودي ليتين يحضنك ازاي"
+    },
+    {
+      "start": 662.92,
+      "speaker": null,
+      "text": "اللي حبيبتي.",
+      "normalized": "اللي حبيبتي"
+    },
+    {
+      "start": 681.22,
+      "speaker": null,
+      "text": "حبيبتي.",
+      "normalized": "حبيبتي"
+    },
+    {
+      "start": 684.92,
+      "speaker": null,
+      "text": "انت بتعرف تتحرك يبوزتك.",
+      "normalized": "انت بتعرف تتحرك يبوزتك"
+    },
+    {
+      "start": 692.92,
+      "speaker": null,
+      "text": "تعرفي تاخديني في حضني.",
+      "normalized": "تعرفي تاخديني في حضني"
+    },
+    {
+      "start": 696.6,
+      "speaker": null,
+      "text": "ماذا سوى؟",
+      "normalized": "ماذا سوي"
+    },
+    {
+      "start": 698.6,
+      "speaker": null,
+      "text": "بقولك تعرفي انت بتعرف تتحركي بوسطك.",
+      "normalized": "بقولك تعرفي انت بتعرف تتحركي بوسطك"
+    },
+    {
+      "start": 705.6,
+      "speaker": null,
+      "text": "ما رحش يعني زي.",
+      "normalized": "ما رحش يعني زي"
+    },
+    {
+      "start": 708.6,
+      "speaker": null,
+      "text": "ايه؟",
+      "normalized": "ايه"
+    },
+    {
+      "start": 710.6,
+      "speaker": null,
+      "text": "ما رحش يعني زي.",
+      "normalized": "ما رحش يعني زي"
+    },
+    {
+      "start": 712.6,
+      "speaker": null,
+      "text": "بتعرف تتحركي بوسطك.",
+      "normalized": "بتعرف تتحركي بوسطك"
+    },
+    {
+      "start": 714.6,
+      "speaker": null,
+      "text": "طومي متاخراني في حضنك.",
+      "normalized": "طومي متاخراني في حضنك"
+    },
+    {
+      "start": 722.92,
+      "speaker": null,
+      "text": "مرحل.",
+      "normalized": "مرحل"
+    },
+    {
+      "start": 752.92,
+      "speaker": null,
+      "text": "نعم.",
+      "normalized": "نعم"
+    },
+    {
+      "start": 757.92,
+      "speaker": null,
+      "text": "نعم.",
+      "normalized": "نعم"
+    },
+    {
+      "start": 762.92,
+      "speaker": null,
+      "text": "ترجع المتروني.",
+      "normalized": "ترجع المتروني"
+    },
+    {
+      "start": 792.92,
+      "speaker": null,
+      "text": "مرحل.",
+      "normalized": "مرحل"
+    },
+    {
+      "start": 822.92,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    }
+  ]
+}

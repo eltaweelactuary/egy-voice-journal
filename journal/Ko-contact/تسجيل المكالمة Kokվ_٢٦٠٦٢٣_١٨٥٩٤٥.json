@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٨٥٩٤٥",
+    "date": "2026-09-17 22:09",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٣_١٨٥٩٤٥.m4a",
+    "duration": 89.925125,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 6,
+    "words": 10
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحلو.",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 5.0,
+      "speaker": null,
+      "text": "مرحلو.",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 10.0,
+      "speaker": null,
+      "text": "مرحلو.",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 18.0,
+      "speaker": null,
+      "text": "مرحلو.",
+      "normalized": "مرحلو"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    },
+    {
+      "start": 60.0,
+      "speaker": null,
+      "text": "ترجمة نانا محمد روز",
+      "normalized": "ترجمه نانا محمد روز"
+    }
+  ]
+}

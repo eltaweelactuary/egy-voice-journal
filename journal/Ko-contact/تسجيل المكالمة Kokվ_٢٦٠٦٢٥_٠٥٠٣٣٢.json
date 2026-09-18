@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٥_٠٥٠٣٣٢",
+    "date": "2026-09-17 22:06",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٥_٠٥٠٣٣٢.m4a",
+    "duration": 68.229438,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 21,
+    "words": 30
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مانا.",
+      "normalized": "مانا"
+    },
+    {
+      "start": 3.86,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 7.8599997,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 11.86,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 15.86,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 19.859999,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 25.859999,
+      "speaker": null,
+      "text": "صحرتي وصليتي. لا. ما ده?",
+      "normalized": "صحرتي وصليتي لا ما ده"
+    },
+    {
+      "start": 36.26,
+      "speaker": null,
+      "text": "نفسي سكتنا.",
+      "normalized": "نفسي سكتنا"
+    },
+    {
+      "start": 41.239998,
+      "speaker": null,
+      "text": "طيب",
+      "normalized": "طيب"
+    },
+    {
+      "start": 44.579998,
+      "speaker": null,
+      "text": "أمشأت؟",
+      "normalized": "امشات"
+    },
+    {
+      "start": 46.579998,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 48.579998,
+      "speaker": null,
+      "text": "أم سلطة؟",
+      "normalized": "ام سلطه"
+    },
+    {
+      "start": 50.579998,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 52.579998,
+      "speaker": null,
+      "text": "أم شك؟",
+      "normalized": "ام شك"
+    },
+    {
+      "start": 54.579998,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 56.579998,
+      "speaker": null,
+      "text": "أم شك؟",
+      "normalized": "ام شك"
+    },
+    {
+      "start": 58.579998,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 60.579998,
+      "speaker": null,
+      "text": "أم شك؟",
+      "normalized": "ام شك"
+    },
+    {
+      "start": 62.579998,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 64.579994,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    },
+    {
+      "start": 66.579994,
+      "speaker": null,
+      "text": "نعم",
+      "normalized": "نعم"
+    }
+  ]
+}

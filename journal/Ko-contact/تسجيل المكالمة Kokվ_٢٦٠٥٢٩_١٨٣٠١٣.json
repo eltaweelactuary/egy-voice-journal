@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٥٢٩_١٨٣٠١٣",
+    "date": "2026-09-17 22:07",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٥٢٩_١٨٣٠١٣.m4a",
+    "duration": 84.4425,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 14,
+    "words": 61
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "مرحل.",
+      "normalized": "مرحل"
+    },
+    {
+      "start": 2.5,
+      "speaker": null,
+      "text": "حمضي المرأة.",
+      "normalized": "حمضي المراه"
+    },
+    {
+      "start": 5.52,
+      "speaker": null,
+      "text": "سنعود الآن إلى المكتب.",
+      "normalized": "سنعود الان الي المكتب"
+    },
+    {
+      "start": 8.12,
+      "speaker": null,
+      "text": "حمضي مرأة المكتبة.",
+      "normalized": "حمضي مراه المكتبه"
+    },
+    {
+      "start": 16.52,
+      "speaker": null,
+      "text": "مرحبا.",
+      "normalized": "مرحبا"
+    },
+    {
+      "start": 20.14,
+      "speaker": null,
+      "text": "سنعيد الدائرة للدفع.",
+      "normalized": "سنعيد الدايره للدفع"
+    },
+    {
+      "start": 23.939999,
+      "speaker": null,
+      "text": "و سنعيد المنطقة.",
+      "normalized": "و سنعيد المنطقه"
+    },
+    {
+      "start": 26.939999,
+      "speaker": null,
+      "text": "حمضي مرأة المكتبة.",
+      "normalized": "حمضي مراه المكتبه"
+    },
+    {
+      "start": 30.0,
+      "speaker": null,
+      "text": "انا هحبسك وعملك واسويلك كده. بيقطع قوي ايه? بقول لك انا",
+      "normalized": "انا هحبسك وعملك واسويلك كده بيقطع قوي ايه بقول لك انا"
+    },
+    {
+      "start": 37.8,
+      "speaker": null,
+      "text": "هحبسك وعملك وهاعضك وعملك. لا مش فاهمة. سيب بيقطع. سامع يا",
+      "normalized": "هحبسك وعملك وهاعضك وعملك لا مش فاهمه سيب بيقطع سامع يا"
+    },
+    {
+      "start": 48.12,
+      "speaker": null,
+      "text": "ماما.",
+      "normalized": "ماما"
+    },
+    {
+      "start": 52.42,
+      "speaker": null,
+      "text": "سمع ولا مستمع. لا بيقطع.",
+      "normalized": "سمع ولا مستمع لا بيقطع"
+    },
+    {
+      "start": 58.719997,
+      "speaker": null,
+      "text": "سمع ولا مستمع. هو سمع هيك بس بيقطع. بيقطع. ايه? سمع ولا",
+      "normalized": "سمع ولا مستمع هو سمع هيك بس بيقطع بيقطع ايه سمع ولا"
+    },
+    {
+      "start": 71.68,
+      "speaker": null,
+      "text": "مصرية.",
+      "normalized": "مصريه"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٠_٠٠٤٣٢٤",
+    "date": "2026-09-17 22:10",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٠_٠٠٤٣٢٤.m4a",
+    "duration": 104.111563,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 11,
+    "words": 36
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": null,
+      "text": "هلو.",
+      "normalized": "هلو"
+    },
+    {
+      "start": 4.0,
+      "speaker": null,
+      "text": "شمعني.",
+      "normalized": "شمعني"
+    },
+    {
+      "start": 8.0,
+      "speaker": null,
+      "text": "بقول لك بتحبني كام تقولي لي ممكن ننام.",
+      "normalized": "بقول لك بتحبني كام تقولي لي ممكن ننام"
+    },
+    {
+      "start": 16.0,
+      "speaker": null,
+      "text": "ها هو ايه يا حمد.",
+      "normalized": "ها هو ايه يا حمد"
+    },
+    {
+      "start": 22.0,
+      "speaker": null,
+      "text": "كتير يعني ولا قليل.",
+      "normalized": "كتير يعني ولا قليل"
+    },
+    {
+      "start": 28.0,
+      "speaker": null,
+      "text": "اوكتي.",
+      "normalized": "اوكتي"
+    },
+    {
+      "start": 37.98,
+      "speaker": null,
+      "text": "مالك يا كوكو عايزة تنامي خالص?",
+      "normalized": "مالك يا كوكو عايزه تنامي خالص"
+    },
+    {
+      "start": 45.68,
+      "speaker": null,
+      "text": "اه.",
+      "normalized": "اه"
+    },
+    {
+      "start": 49.12,
+      "speaker": null,
+      "text": "بحبك يا بطة.",
+      "normalized": "بحبك يا بطه"
+    },
+    {
+      "start": 58.0,
+      "speaker": null,
+      "text": "ترجمة نانا",
+      "normalized": "ترجمه نانا"
+    },
+    {
+      "start": 88.0,
+      "speaker": null,
+      "text": "ترجمة نانا محمد روح",
+      "normalized": "ترجمه نانا محمد روح"
+    }
+  ]
+}

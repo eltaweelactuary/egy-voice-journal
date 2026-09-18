@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Ko-contact — تسجيل المكالمة Kokվ_٢٦٠٦٢٢_١٠١١١٦",
+    "date": "2026-09-17 21:51",
+    "source": "تسجيل المكالمة Kokվ_٢٦٠٦٢٢_١٠١١١٦.m4a",
+    "duration": 5.27575,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 3,
+    "words": 3
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": "متحدث ١",
+      "text": "ألو",
+      "normalized": "الو"
+    },
+    {
+      "start": 1.0,
+      "speaker": "متحدث ٢",
+      "text": "أيوه",
+      "normalized": "ايوه"
+    },
+    {
+      "start": 3.0,
+      "speaker": "متحدث ١",
+      "text": "إزيك؟",
+      "normalized": "ازيك"
+    }
+  ]
+}
