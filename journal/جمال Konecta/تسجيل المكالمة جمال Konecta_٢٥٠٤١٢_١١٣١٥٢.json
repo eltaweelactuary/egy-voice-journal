@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "title": "جمال Konecta — تسجيل المكالمة جمال Konecta_٢٥٠٤١٢_١١٣١٥٢",
+    "date": "2026-09-18 21:12",
+    "source": "تسجيل المكالمة جمال Konecta_٢٥٠٤١٢_١١٣١٥٢.m4a",
+    "duration": 1.563813,
+    "provider": "consensus",
+    "chunks": 1,
+    "lines": 2,
+    "words": 4
+  },
+  "lines": [
+    {
+      "start": 0.0,
+      "speaker": "متحدث ١",
+      "text": "ألو",
+      "normalized": "الو"
+    },
+    {
+      "start": 1.0,
+      "speaker": "متحدث ٢",
+      "text": "إيه يا عصام",
+      "normalized": "ايه يا عصام"
+    }
+  ]
+}
