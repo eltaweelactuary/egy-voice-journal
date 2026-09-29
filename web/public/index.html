@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>يوميات صوتية مصرية</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0f2a44">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/icon.svg">
+<style>
+:root{--bg:#0f172a;--card:#16213a;--ink:#f1f5f9;--muted:#94a3b8;--navy:#0f2a44;--teal:#14b8a6;--red:#ef4444;--line:#26344f}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{background:var(--navy);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+h1{font-size:1.15rem;margin:0}
+#net{font-size:.8rem;padding:3px 10px;border-radius:99px;background:#334155}
+#net.on{background:#0d9488}
+main{max-width:720px;margin:0 auto;padding:16px}
+.rec{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px 0}
+#recBtn{width:150px;height:150px;border-radius:50%;border:0;background:var(--teal);color:#042f2e;font-size:1.2rem;font-weight:700;cursor:pointer;box-shadow:0 0 0 10px rgba(20,184,166,.15)}
+#recBtn.live{background:var(--red);color:#fff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 22px rgba(239,68,68,.12)}}
+#recBtn:focus-visible,button:focus-visible,label:focus-within{outline:3px solid #fde047;outline-offset:3px}
+#timer{font-variant-numeric:tabular-nums;font-size:1.6rem}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{background:#1e293b;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.95rem;cursor:pointer}
+.btn.primary{background:var(--teal);color:#042f2e;border-color:var(--teal);font-weight:700}
+#status{color:var(--muted);text-align:center;min-height:1.4em}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
+.entry h2{font-size:1.05rem;margin:0 0 4px}
+.meta{color:var(--muted);font-size:.8rem}
+.summary{margin:8px 0;line-height:1.7}
+.badge{font-size:.75rem;padding:2px 8px;border-radius:99px;background:#334155;margin-inline-start:6px}
+.badge.done{background:#0d9488}.badge.error{background:#991b1b}.badge.working{background:#a16207}
+details summary{cursor:pointer;color:var(--teal);margin-top:6px}
+pre{white-space:pre-wrap;line-height:1.8;font-family:inherit;background:#0b1224;padding:10px;border-radius:10px;max-height:50vh;overflow:auto}
+audio{width:100%;margin-top:8px}
+.empty{color:var(--muted);text-align:center;padding:24px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header><h1>🎙️ يوميات صوتية مصرية</h1><span id="net" aria-live="polite">…</span></header>
+<main>
+  <section class="rec" aria-label="التسجيل">
+    <button id="recBtn" aria-pressed="false">اضغط وسجّل</button>
+    <div id="timer" aria-live="off">00:00</div>
+    <div class="row">
+      <label class="btn">📂 ارفع ملف صوت<input id="fileIn" class="sr" type="file" accept="audio/*" multiple></label>
+      <button class="btn" id="retryBtn">🔄 فرّغ المعلّق الآن</button>
+      <button class="btn" id="installBtn" hidden>📲 ثبّت التطبيق</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </section>
+  <section aria-label="اليوميات"><div id="list"></div></section>
+</main>
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
