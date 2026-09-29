@@ -16,13 +16,16 @@ const FIREBASE_CONFIG = {
   // Reuses the App Check-registered "Wasel-Sign-Translator" web app; the reCAPTCHA key covers this domain.
   appId: "1:1011709994936:web:69d2d5e17b404f7486514d",
 };
-const RECAPTCHA_V3_SITE_KEY = "6LfkudQtAAAAAKDSabDt10YO5IqTROy_zfSEI1Qe";
+// Empty = App Check off (reCAPTCHA Classic registration is deprecated; Fraud Defense needs billing).
+const RECAPTCHA_V3_SITE_KEY = "";
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-flash-latest"];
 const MAX_INLINE_BYTES = 18 * 1024 * 1024; // Gemini inline request limit is ~20 MB
 
 const app = initializeApp(FIREBASE_CONFIG);
-if (["localhost", "127.0.0.1"].includes(location.hostname)) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-initializeAppCheck(app, { provider: new ReCaptchaV3Provider(RECAPTCHA_V3_SITE_KEY), isTokenAutoRefreshEnabled: true });
+if (RECAPTCHA_V3_SITE_KEY) {
+  if (["localhost", "127.0.0.1"].includes(location.hostname)) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+  initializeAppCheck(app, { provider: new ReCaptchaV3Provider(RECAPTCHA_V3_SITE_KEY), isTokenAutoRefreshEnabled: true });
+}
 const ai = getAI(app, { backend: new GoogleAIBackend() });
 
 const TRANSCRIBE_PROMPT = [
