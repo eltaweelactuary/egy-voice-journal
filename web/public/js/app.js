@@ -2,31 +2,50 @@
 // Record or upload audio -> kept on the phone (IndexedDB) -> when online, Gemini
 // (via Firebase AI Logic; no API key in this bundle) transcribes it verbatim in
 // Egyptian Arabic, then writes a title + short summary.
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check.js";
 import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
 import { putEntry, getEntry, allEntries, deleteEntry, takeShared } from "./db.js";
+import { app, onUser, isOwner, signIn, saveToArchive } from "./cloud.js";
 
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAzE9lUwQl2iZDWlV5NCyxe3gr9DOKfIFc",
-  authDomain: "gen-lang-client-0664382233.firebaseapp.com",
-  projectId: "gen-lang-client-0664382233",
-  storageBucket: "gen-lang-client-0664382233.firebasestorage.app",
-  messagingSenderId: "1011709994936",
-  // Reuses the App Check-registered "Wasel-Sign-Translator" web app; the reCAPTCHA key covers this domain.
-  appId: "1:1011709994936:web:69d2d5e17b404f7486514d",
-};
-// Empty = App Check off (reCAPTCHA Classic registration is deprecated; Fraud Defense needs billing).
-const RECAPTCHA_V3_SITE_KEY = "";
 const MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash", "gemini-flash-latest"];
 const MAX_INLINE_BYTES = 18 * 1024 * 1024; // Gemini inline request limit is ~20 MB
 
-const app = initializeApp(FIREBASE_CONFIG);
-if (RECAPTCHA_V3_SITE_KEY) {
-  if (["localhost", "127.0.0.1"].includes(location.hostname)) self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
-  initializeAppCheck(app, { provider: new ReCaptchaV3Provider(RECAPTCHA_V3_SITE_KEY), isTokenAutoRefreshEnabled: true });
-}
 const ai = getAI(app, { backend: new GoogleAIBackend() });
+
+// ───────────── shared archive (Firestore) ─────────────
+// Every finished transcript is copied to the owner's archive, so all devices and
+// all other sources end up in one place: /archive.
+let owner = null;
+function sourceKind(label) {
+  return /^ملف/.test(label) ? "upload" : /^مشاركة/.test(label) ? "share" : "phone";
+}
+async function syncOne(e) {
+  if (!owner || e.status !== "done" || e.synced) return;
+  await saveToArchive(e.id, {
+    title: e.title, text: e.transcript, summary: e.summary, tags: e.tags,
+    source: sourceKind(e.source), source_label: e.source, folder: "الموبايل",
+    recorded_at: e.created_at, duration_sec: e.duration_ms ? e.duration_ms / 1000 : null,
+  });
+  e.synced = true;
+  await putEntry(e);
+}
+async function syncAll() {
+  if (!owner || !navigator.onLine) return;
+  let n = 0;
+  for (const e of await allEntries()) {
+    try { if (e.status === "done" && !e.synced) { await syncOne(e); n++; } } catch (err) { console.warn("sync", err); }
+  }
+  if (n) { status("☁ اترفع " + n + " تفريغ للأرشيف المجمّع."); render(); }
+}
+function cloudBadge(u) {
+  const b = $("cloudBtn");
+  if (isOwner(u)) { b.textContent = "☁ الأرشيف متصل"; b.classList.add("on"); b.disabled = true; }
+  else if (u) { b.textContent = "⚠ الحساب ده مش صاحب الأرشيف"; b.disabled = false; }
+  else { b.textContent = "☁ اربط الأرشيف"; b.classList.remove("on"); b.disabled = false; }
+}
+function initCloud() {
+  $("cloudBtn").addEventListener("click", () => signIn().catch((e) => status("تسجيل الدخول فشل: " + (e.code || e.message))));
+  onUser((u) => { owner = isOwner(u) ? u : null; cloudBadge(u); syncAll(); });
+}
 
 const TRANSCRIBE_PROMPT = [
   "أنت مفرّغ صوتي محترف متخصص في اللهجة المصرية العامية.",
@@ -160,13 +179,15 @@ async function processQueue() {
                 : /429|quota|exhaust/i.test(msg) ? "الحصة المجانية خلصت مؤقتًا — هيعيد المحاولة بعدين"
                 : msg.slice(0, 200);
       }
-      await putEntry(e); await render();
+      await putEntry(e);
+      if (e.status === "done") { try { await syncOne(e); } catch (err) { console.warn("sync", err); } }
+      await render();
     }
   } finally { busy = false; }
 }
 $("retryBtn").addEventListener("click", () => { if (!navigator.onLine) status("مفيش نت دلوقتي."); processQueue(); });
 function netBadge() { $("net").textContent = navigator.onLine ? "متصل" : "بدون نت"; $("net").classList.toggle("on", navigator.onLine); }
-window.addEventListener("online", () => { netBadge(); processQueue(); });
+window.addEventListener("online", () => { netBadge(); processQueue(); syncAll(); });
 window.addEventListener("offline", netBadge);
 
 // ───────────── list ─────────────
@@ -179,7 +200,7 @@ async function render() {
     const cls = e.status === "done" ? "done" : e.status === "error" || e.status === "too_big" ? "error" : e.status === "working" ? "working" : "";
     return '<article class="entry" data-id="' + esc(e.id) + '">' +
       "<h2>" + esc(e.title || e.source) + '<span class="badge ' + cls + '">' + esc(STATUS_AR[e.status] || e.status) + "</span></h2>" +
-      '<div class="meta">' + esc(when) + " · " + esc(Math.round(e.size / 1024)) + " KB" + (e.tags.length ? " · " + e.tags.map(esc).join("، ") : "") + "</div>" +
+      '<div class="meta">' + esc(when) + " · " + esc(Math.round(e.size / 1024)) + " KB" + (e.tags.length ? " · " + e.tags.map(esc).join("، ") : "") + (e.synced ? " · ☁ في الأرشيف" : "") + "</div>" +
       (e.summary ? '<p class="summary">' + esc(e.summary) + "</p>" : "") +
       (e.error ? '<p class="meta" role="alert">⚠ ' + esc(e.error) + "</p>" : "") +
       (e.transcript ? "<details><summary>التفريغ الكامل</summary><pre>" + esc(e.transcript) + "</pre></details>" : "") +
@@ -215,6 +236,7 @@ if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").cat
 
 (async () => {
   netBadge();
+  initCloud();
   const shared = await takeShared();              // files shared from WhatsApp / Recorder via the share sheet
   for (const f of shared) await addAudio(f.blob, "مشاركة: " + (f.name || "صوت"), null);
   await render();

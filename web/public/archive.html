@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>الأرشيف المجمّع — يوميات صوتية مصرية</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0f2a44">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+:root{--bg:#0f172a;--card:#16213a;--ink:#f1f5f9;--muted:#94a3b8;--navy:#0f2a44;--teal:#14b8a6;--line:#26344f;--hl:#fde047}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+header{background:var(--navy);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+h1{font-size:1.15rem;margin:0}
+main{max-width:860px;margin:0 auto;padding:16px}
+.btn{background:#1e293b;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:.92rem;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.primary{background:var(--teal);color:#042f2e;border-color:var(--teal);font-weight:700}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,label:focus-within{outline:3px solid var(--hl);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gate{text-align:center;padding:40px 12px;line-height:1.9}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0 14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:1.4rem;color:var(--teal)}
+.stat span{color:var(--muted);font-size:.8rem}
+input[type=search],select{background:#0b1224;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:1rem}
+input[type=search]{flex:1;min-width:200px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{background:#1e293b;border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:5px 12px;font-size:.85rem;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--teal);color:#042f2e;border-color:var(--teal)}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0}
+.entry h2{font-size:1.02rem;margin:0 0 4px;line-height:1.5}
+.meta{color:var(--muted);font-size:.8rem}
+.summary{margin:8px 0;line-height:1.7}
+.snip{background:#0b1224;border-radius:8px;padding:6px 10px;margin:6px 0;line-height:1.7;font-size:.92rem}
+mark{background:var(--hl);color:#111;border-radius:3px}
+.tag{font-size:.72rem;padding:2px 8px;border-radius:99px;background:#334155;margin-inline-start:4px}
+details summary{cursor:pointer;color:var(--teal);margin-top:6px}
+pre{white-space:pre-wrap;line-height:1.85;font-family:inherit;background:#0b1224;padding:10px;border-radius:10px;max-height:60vh;overflow:auto}
+#status{color:var(--muted);min-height:1.4em;margin:6px 0}
+.empty{color:var(--muted);text-align:center;padding:24px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 الأرشيف المجمّع</h1>
+  <div class="row">
+    <a class="btn" href="/">🎙️ سجّل</a>
+    <span id="who" class="meta"></span>
+    <button class="btn" id="outBtn" hidden>خروج</button>
+  </div>
+</header>
+<main>
+  <section id="gate" class="gate" hidden>
+    <p>كل التفريغات من كل المصادر في مكان واحد: الموبايل، الملفات المرفوعة، مشاركات واتساب، وبايب لاين GitHub.</p>
+    <p class="meta">الأرشيف خاص بصاحبه فقط، ومحدش غيره يقدر يقراه.</p>
+    <button class="btn primary" id="inBtn">الدخول بحساب Google</button>
+    <p id="gateMsg" role="alert"></p>
+  </section>
+
+  <section id="app" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="row">
+      <label class="sr" for="q">ابحث في كل التفريغات</label>
+      <input id="q" type="search" placeholder="ابحث في كل التفريغات… (مثلاً: عقد، مرتب، الموعد)" autocomplete="off">
+      <label class="sr" for="folder">المجلد</label>
+      <select id="folder"><option value="">كل المجلدات</option></select>
+    </div>
+    <div class="chips" id="sources" role="group" aria-label="المصدر"></div>
+    <div class="row">
+      <label class="btn">📥 استورد ملفات (.json / .md / .txt)<input id="importIn" class="sr" type="file" multiple accept=".json,.md,.txt,application/json,text/plain,text/markdown"></label>
+      <button class="btn" id="dlAll">⬇ نزّل المعروض كملف واحد .md</button>
+      <button class="btn" id="reload">🔄 حدّث</button>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+    <div id="list"></div>
+  </section>
+</main>
+<script type="module" src="/js/archive.js"></script>
+</body>
+</html>

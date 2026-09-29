@@ -11,6 +11,7 @@
 <style>
 :root{--bg:#0f172a;--card:#16213a;--ink:#f1f5f9;--muted:#94a3b8;--navy:#0f2a44;--teal:#14b8a6;--red:#ef4444;--line:#26344f}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
 header{background:var(--navy);padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
 h1{font-size:1.15rem;margin:0}
@@ -26,6 +27,8 @@ main{max-width:720px;margin:0 auto;padding:16px}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .btn{background:#1e293b;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.95rem;cursor:pointer}
 .btn.primary{background:var(--teal);color:#042f2e;border-color:var(--teal);font-weight:700}
+a.btn{text-decoration:none;display:inline-block}
+#cloudBtn.on{border-color:var(--teal);color:var(--teal)}
 #status{color:var(--muted);text-align:center;min-height:1.4em}
 .entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0}
 .entry h2{font-size:1.05rem;margin:0 0 4px}
@@ -43,6 +46,10 @@ audio{width:100%;margin-top:8px}
 <body>
 <header><h1>🎙️ يوميات صوتية مصرية</h1><span id="net" aria-live="polite">…</span></header>
 <main>
+  <nav class="row" style="margin-top:4px" aria-label="الأرشيف">
+    <a class="btn primary" href="/archive">📚 الأرشيف المجمّع</a>
+    <button class="btn" id="cloudBtn">☁ اربط الأرشيف</button>
+  </nav>
   <section class="rec" aria-label="التسجيل">
     <button id="recBtn" aria-pressed="false">اضغط وسجّل</button>
     <div id="timer" aria-live="off">00:00</div>

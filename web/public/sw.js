@@ -1,6 +1,6 @@
 // Service worker: offline app shell + Android share target for audio files.
-const CACHE = "voice-journal-v1";
-const SHELL = ["/", "/index.html", "/js/app.js", "/js/db.js", "/manifest.webmanifest", "/icon.svg"];
+const CACHE = "voice-journal-v2";
+const SHELL = ["/", "/index.html", "/archive", "/js/app.js", "/js/db.js", "/js/cloud.js", "/js/archive.js", "/js/importers.js", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -42,6 +42,7 @@ self.addEventListener("fetch", (e) => {
   e.respondWith(
     fetch(e.request)
       .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return res; })
-      .catch(() => caches.match(e.request, { ignoreSearch: true }).then((r) => r || caches.match("/index.html")))
+      .catch(() => caches.match(e.request, { ignoreSearch: true })
+        .then((r) => r || caches.match(url.pathname.startsWith("/archive") ? "/archive" : "/index.html")))
   );
 });
