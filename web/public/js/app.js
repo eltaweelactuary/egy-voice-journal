@@ -2,7 +2,7 @@
 // Record or upload audio -> kept on the phone (IndexedDB) -> when online, Gemini
 // (via Firebase AI Logic; no API key in this bundle) transcribes it verbatim in
 // Egyptian Arabic, then writes a title + short summary.
-import { getAI, getGenerativeModel, GoogleAIBackend } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-ai.js";
+import { getAI, getGenerativeModel, GoogleAIBackend } from "./gemini-gateway.js"; // free Cloudflare gateway (replaces Firebase AI Logic before 2026-11-02)
 import { putEntry, getEntry, allEntries, deleteEntry, takeShared } from "./db.js";
 import { app, onUser, isOwner, signIn, saveToArchive } from "./cloud.js";
 
