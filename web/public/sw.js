@@ -1,5 +1,5 @@
 // Service worker: offline app shell + Android share target for audio files.
-const CACHE = "voice-journal-v3";
+const CACHE = "voice-journal-v4";
 const SHELL = ["/", "/index.html", "/archive", "/js/app.js", "/js/gemini-gateway.js", "/js/db.js", "/js/cloud.js", "/js/archive.js", "/js/importers.js", "/manifest.webmanifest", "/icon.svg"];
 
 self.addEventListener("install", (e) => {
