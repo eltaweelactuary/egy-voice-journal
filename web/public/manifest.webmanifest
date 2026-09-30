@@ -1,0 +1,21 @@
+{
+  "name": "يوميات صوتية مصرية",
+  "short_name": "يومياتي",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f2a44",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }],
+  "shortcuts": [
+    { "name": "سجّل يومية جديدة", "short_name": "سجّل", "url": "/?record=1", "icons": [{ "src": "/icon.svg", "sizes": "any" }] }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": { "files": [{ "name": "audio", "accept": ["audio/*", ".ogg", ".opus", ".m4a", ".mp3", ".wav", ".aac"] }] }
+  }
+}
